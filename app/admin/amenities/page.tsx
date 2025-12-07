@@ -186,7 +186,7 @@ export default function AmenitiesPage() {
     setFormData({
       name: amenity.name,
       description: amenity.description || '',
-      icon: amenity.icon || '',,
+      icon: amenity.icon || '',
       category: amenity.category
     });
     setEditingAmenity(amenity);
