@@ -223,7 +223,12 @@ export default function ReportsPage() {
     });
 
     return Object.entries(propertyStats)
-      .map(([_, stats]) => stats)
+      // .map(([_, stats]) => stats)
+      .map(([_, stats]) => ({
+        property: stats.title,
+        bookings: stats.bookings,
+        revenue: stats.revenue
+      }))
       .sort((a, b) => b.revenue - a.revenue);
   };
 
