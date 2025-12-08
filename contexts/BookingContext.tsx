@@ -24,6 +24,7 @@ interface Booking {
   serviceFee: number;
   paymentStatus: string;
   bookingStatus: string;
+  paymentMethod: 'paystack' | 'bank_transfer' | 'onsite'; // Added this line
   paymentReference: string;
   createdAt: string;
   accessPass?: {
