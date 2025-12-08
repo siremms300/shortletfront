@@ -86,6 +86,16 @@ export default function ProductCard({ product, onAddToCart, disabled = false }: 
     alert(`${quantity} ${product.name} added to cart!`);
   };
 
+  // const getImageUrl = (imagePath: string) => {
+  //   if (!imagePath) return '/default-product.jpg';
+  //   if (imagePath.startsWith('http')) return imagePath;
+  //   const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+  //   return `${baseUrl}${imagePath}`;
+  // };
+
+  // const mainImage = product.images.find(img => img.isMain)?.url || product.images[0]?.url;
+
+
   const getImageUrl = (imagePath: string) => {
     if (!imagePath) return '/default-product.jpg';
     if (imagePath.startsWith('http')) return imagePath;
@@ -93,7 +103,11 @@ export default function ProductCard({ product, onAddToCart, disabled = false }: 
     return `${baseUrl}${imagePath}`;
   };
 
-  const mainImage = product.images.find(img => img.isMain)?.url || product.images[0]?.url;
+  // Get the first image (since there's no isMain property in the interface)
+  const mainImage = product.images && product.images.length > 0 
+    ? product.images[0].url 
+    : '/default-product.jpg';
+
 
   return (
     <div className={`bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition duration-200 ${
