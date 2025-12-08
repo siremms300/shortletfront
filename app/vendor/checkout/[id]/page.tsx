@@ -111,7 +111,8 @@ export default function VendorCheckoutPage() {
               unit: 'Not specified',
               specialInstructions: ''
             },
-            items: foundOrder.items?.map(item => ({
+            // items: foundOrder.items?.map(item => ({
+            items: foundOrder.items?.map((item: any) => ({
               ...item,
               product: {
                 ...item.product,
