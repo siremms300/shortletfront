@@ -1,3 +1,6 @@
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@THE ONE BELOW IS WORKING @@@@@@@@@@@2
+
 // app/dashboard/bookings/page.tsx - UPDATED VERSION
 'use client';
 
@@ -29,6 +32,34 @@ interface OnsitePaymentDetails {
   status: string;
 }
 
+// interface Booking {
+//   _id: string;
+//   property: {
+//     _id: string;
+//     title: string;
+//     location: string;
+//     images: Array<{ url: string }>;
+//     price: number;
+//     specifications: {
+//       maxGuests: number;
+//     };
+//   };
+//   checkIn: string;
+//   checkOut: string;
+//   guests: number;
+//   totalAmount: number;
+//   serviceFee: number;
+//   paymentStatus: string;
+//   bookingStatus: string;
+//   paymentMethod: 'paystack' | 'bank_transfer' | 'onsite';
+//   paymentReference: string;
+//   createdAt: string;
+//   accessPass?: AccessPass;
+//   bankTransferDetails?: BankTransferDetails;
+//   onsitePaymentDetails?: OnsitePaymentDetails;
+//   specialRequests?: string;
+// }
+
 interface Booking {
   _id: string;
   property: {
@@ -48,7 +79,7 @@ interface Booking {
   serviceFee: number;
   paymentStatus: string;
   bookingStatus: string;
-  paymentMethod: 'paystack' | 'bank_transfer' | 'onsite';
+  paymentMethod: 'paystack' | 'bank_transfer' | 'onsite'; // Added this line
   paymentReference: string;
   createdAt: string;
   accessPass?: AccessPass;
