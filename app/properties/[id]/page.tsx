@@ -30,10 +30,35 @@ export default function PropertyPage() {
     fetchProperty();
   }, [propertyId]);
 
+  // const fetchProperty = async () => {
+  //   try {
+  //     setLoading(true);
+  //     setError('');
+      
+  //     console.log('📡 [Property Page] Fetching property with ID:', propertyId);
+      
+  //     const data = await propertiesAPI.getPropertyById(propertyId);
+  //     console.log('✅ [Property Page] Property fetched:', data);
+      
+  //     setProperty(data);
+  //   } catch (error: any) {
+  //     console.error('💥 [Property Page] Error fetching property:', error);
+  //     console.error('💥 [Property Page] Error message:', error.message);
+  //     setError(error.message || 'Failed to load property');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const fetchProperty = async () => {
     try {
       setLoading(true);
       setError('');
+      
+      // Ensure propertyId is not undefined
+      if (!propertyId) {
+        throw new Error('Invalid property ID');
+      }
       
       console.log('📡 [Property Page] Fetching property with ID:', propertyId);
       
