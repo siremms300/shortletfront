@@ -134,8 +134,13 @@ export default function PropertiesPage() {
       setAllAmenities(amenitiesData);
 
       // Create lookup for amenity names
+      // const lookup: {[key: string]: string} = {};
+      // amenitiesData.forEach(amenity => {
+      //   lookup[amenity._id] = amenity.name;
+      // });
+      // Create lookup for amenity names
       const lookup: {[key: string]: string} = {};
-      amenitiesData.forEach(amenity => {
+      amenitiesData.forEach((amenity: Amenity) => {
         lookup[amenity._id] = amenity.name;
       });
       setAmenitiesLookup(lookup);
