@@ -6,6 +6,64 @@ import { useParams, useRouter } from 'next/navigation';
 import { useVendor } from '@/contexts/VendorContext';
 import Link from 'next/link';
 
+// interface VendorOrder {
+//   _id: string;
+//   orderNumber: string;
+//   user: {
+//     _id: string;
+//     firstName: string;
+//     lastName: string;
+//     email: string;
+//     phone?: string;
+//   };
+//   vendor: {
+//     _id: string;
+//     businessName: string;
+//     contactPerson?: {
+//       name: string;
+//       email: string;
+//       phone: string;
+//     };
+//   };
+//   booking: {
+//     _id: string;
+//     property: string;
+//     checkIn: string;
+//     checkOut: string;
+//   };
+//   items: Array<{
+//     product: {
+//       _id: string;
+//       name: string;
+//       description: string;
+//       price: number;
+//       images: Array<{ url: string }>;
+//       preparationTime: number;
+//     };
+//     quantity: number;
+//     price: number;
+//     specialInstructions?: string;
+//   }>;
+//   subtotal: number;
+//   serviceFee: number;
+//   deliveryFee: number;
+//   totalAmount: number;
+//   orderStatus: string;
+//   paymentStatus: string;
+//   deliveryAddress: {
+//     property: string;
+//     unit: string;
+//     specialInstructions: string;
+//   };
+//   preferredDeliveryTime?: string;
+//   estimatedDeliveryTime?: string;
+//   actualDeliveryTime?: string;
+//   customerNotes: string;
+//   vendorNotes: string;
+//   createdAt: string;
+//   updatedAt: string;
+// }
+
 interface VendorOrder {
   _id: string;
   orderNumber: string;
@@ -19,7 +77,7 @@ interface VendorOrder {
   vendor: {
     _id: string;
     businessName: string;
-    contactPerson?: {
+    contactPerson?: { // Make this optional
       name: string;
       email: string;
       phone: string;
@@ -58,10 +116,10 @@ interface VendorOrder {
   preferredDeliveryTime?: string;
   estimatedDeliveryTime?: string;
   actualDeliveryTime?: string;
-  customerNotes: string;
-  vendorNotes: string;
+  customerNotes?: string; // Make optional
+  vendorNotes?: string; // Make optional
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string; // Make optional
 }
 
 export default function VendorOrderDetailsPage() {
