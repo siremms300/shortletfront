@@ -5,6 +5,16 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { authAPI } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 
+// interface User {
+//   _id: string;
+//   firstName: string;
+//   lastName: string;
+//   email: string;
+//   role: string;
+//   profileImagePath?: string;
+//   isVerified: boolean;
+// }
+
 interface User {
   _id: string;
   firstName: string;
@@ -13,6 +23,11 @@ interface User {
   role: string;
   profileImagePath?: string;
   isVerified: boolean;
+  phone?: string; // Add this
+  dateOfBirth?: string; // Add this
+  bio?: string; // Add this
+  verificationStatus?: string; // Add this
+  documents?: any[]; // Add this
 }
 
 interface AuthContextType {
