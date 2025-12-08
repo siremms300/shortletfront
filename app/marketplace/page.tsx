@@ -95,6 +95,30 @@ export default function MarketplacePage() {
     filterProducts();
   }, [products, selectedCategory, priceRange, searchQuery]);
 
+  // const fetchMarketplaceData = async () => {
+  //   try {
+  //     setProductsLoading(true);
+  //     setError('');
+
+  //     const productsResponse = await vendorAPI.getAvailableProducts();
+  //     setProducts(productsResponse.products || []);
+      
+  //     // Set price range based on actual products
+  //     if (productsResponse.products && productsResponse.products.length > 0) {
+  //       const prices = productsResponse.products.map(p => p.price);
+  //       const minPrice = Math.floor(Math.min(...prices));
+  //       const maxPrice = Math.ceil(Math.max(...prices));
+  //       setPriceRange([minPrice, maxPrice]);
+  //     }
+
+  //   } catch (error: any) {
+  //     console.error('Error fetching marketplace data:', error);
+  //     setError(error.message || 'Failed to load marketplace');
+  //   } finally {
+  //     setProductsLoading(false);
+  //   }
+  // };
+
   const fetchMarketplaceData = async () => {
     try {
       setProductsLoading(true);
@@ -105,7 +129,7 @@ export default function MarketplacePage() {
       
       // Set price range based on actual products
       if (productsResponse.products && productsResponse.products.length > 0) {
-        const prices = productsResponse.products.map(p => p.price);
+        const prices = productsResponse.products.map((p: VendorProduct) => p.price); // Fix here
         const minPrice = Math.floor(Math.min(...prices));
         const maxPrice = Math.ceil(Math.max(...prices));
         setPriceRange([minPrice, maxPrice]);
