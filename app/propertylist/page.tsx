@@ -38,6 +38,7 @@ interface Property {
     lat: number;
     lng: number;
   };
+  createdAt?: string | Date; 
 }
 
 export default function PropertiesPage() {
