@@ -24,6 +24,55 @@ interface VendorProduct {
   tags: string[];
 }
 
+// interface VendorOrder {
+//   _id: string;
+//   orderNumber: string;
+//   user: {
+//     _id: string;
+//     firstName: string;
+//     lastName: string;
+//     email: string;
+//     phone?: string;
+//   };
+//   vendor: {
+//     _id: string;
+//     businessName: string;
+//     contactPerson: {
+//       name: string;
+//       email: string;
+//       phone: string;
+//     };
+//   };
+//   booking: {
+//     _id: string;
+//     property: string;
+//     checkIn: string;
+//     checkOut: string;
+//   };
+//   items: Array<{
+//     product: VendorProduct;
+//     quantity: number;
+//     price: number;
+//     specialInstructions?: string;
+//   }>;
+//   subtotal: number;
+//   serviceFee: number;
+//   deliveryFee: number;
+//   totalAmount: number;
+//   orderStatus: string;
+//   paymentStatus: string;
+//   deliveryAddress: {
+//     property: string;
+//     unit: string;
+//     specialInstructions: string;
+//   };
+//   preferredDeliveryTime?: string;
+//   estimatedDeliveryTime?: string;
+//   actualDeliveryTime?: string;
+//   createdAt: string;
+// }
+
+// Update the VendorOrder interface in contexts/VendorContext.tsx
 interface VendorOrder {
   _id: string;
   orderNumber: string;
@@ -69,7 +118,10 @@ interface VendorOrder {
   preferredDeliveryTime?: string;
   estimatedDeliveryTime?: string;
   actualDeliveryTime?: string;
+  customerNotes?: string; // Make optional
+  vendorNotes?: string; // Make optional 
   createdAt: string;
+  updatedAt?: string; // Add this line
 }
 
 interface CartItem {
