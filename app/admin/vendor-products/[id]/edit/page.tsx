@@ -66,42 +66,80 @@ export default function EditVendorProductPage() {
     fetchData();
   }, [productId]);
 
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const [productResponse, vendorsResponse] = await Promise.all([
-        vendorAPI.getAvailableProducts().then(res => 
-          res.products?.find((p: any) => p._id === productId) || null
-        ),
-        vendorAPI.getVendors({ status: 'active' })
-      ]);
+  // const fetchData = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const [productResponse, vendorsResponse] = await Promise.all([
+  //       vendorAPI.getAvailableProducts().then(res => 
+  //         res.products?.find((p: any) => p._id === productId) || null
+  //       ),
+  //       vendorAPI.getVendors({ status: 'active' })
+  //     ]);
 
-      if (!productResponse) {
-        setError('Product not found');
-        return;
+  //     if (!productResponse) {
+  //       setError('Product not found');
+  //       return;
+  //     }
+
+  //     setProduct(productResponse);
+  //     setVendors(vendorsResponse.vendors || []);
+  //     setFormData({
+  //       name: productResponse.name,
+  //       description: productResponse.description,
+  //       category: productResponse.category,
+  //       price: productResponse.price.toString(),
+  //       stockQuantity: productResponse.stockQuantity.toString(),
+  //       minOrderQuantity: productResponse.minOrderQuantity.toString(),
+  //       maxOrderQuantity: productResponse.maxOrderQuantity.toString(),
+  //       preparationTime: productResponse.preparationTime.toString(),
+  //       tags: productResponse.tags.join(', '),
+  //       vendorId: productResponse.vendor._id
+  //     });
+  //     setExistingImages(productResponse.images.map(img => img.url));
+
+  //   } catch (error: any) {
+  //     setError(error.message || 'Failed to fetch data');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [productResponse, vendorsResponse] = await Promise.all([
+          vendorAPI.getAvailableProducts().then(res => 
+            res.products?.find((p: any) => p._id === productId) || null
+          ),
+          vendorAPI.getVendors({ status: 'active' })
+        ]);
+
+        if (!productResponse) {
+          setError('Product not found');
+          return;
+        }
+
+        setProduct(productResponse);
+        setVendors(vendorsResponse.vendors || []);
+        setFormData({
+          name: productResponse.name,
+          description: productResponse.description,
+          category: productResponse.category,
+          price: productResponse.price.toString(),
+          stockQuantity: productResponse.stockQuantity.toString(),
+          minOrderQuantity: productResponse.minOrderQuantity.toString(),
+          maxOrderQuantity: productResponse.maxOrderQuantity.toString(),
+          preparationTime: productResponse.preparationTime.toString(),
+          tags: productResponse.tags.join(', '),
+          vendorId: productResponse.vendor._id
+        });
+        setExistingImages(productResponse.images.map((img: any) => img.url)); // Fix here
+
+      } catch (error: any) {
+        setError(error.message || 'Failed to fetch data');
+      } finally {
+        setLoading(false);
       }
-
-      setProduct(productResponse);
-      setVendors(vendorsResponse.vendors || []);
-      setFormData({
-        name: productResponse.name,
-        description: productResponse.description,
-        category: productResponse.category,
-        price: productResponse.price.toString(),
-        stockQuantity: productResponse.stockQuantity.toString(),
-        minOrderQuantity: productResponse.minOrderQuantity.toString(),
-        maxOrderQuantity: productResponse.maxOrderQuantity.toString(),
-        preparationTime: productResponse.preparationTime.toString(),
-        tags: productResponse.tags.join(', '),
-        vendorId: productResponse.vendor._id
-      });
-      setExistingImages(productResponse.images.map(img => img.url));
-
-    } catch (error: any) {
-      setError(error.message || 'Failed to fetch data');
-    } finally {
-      setLoading(false);
-    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -482,3 +520,8 @@ export default function EditVendorProductPage() {
     </div>
   );
 }
+
+
+
+
+
