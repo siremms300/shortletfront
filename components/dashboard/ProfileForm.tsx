@@ -471,7 +471,8 @@ export default function ProfileForm() {
       {activeTab === 'verification' && (
         <DocumentVerification 
           user={profile} 
-          onUpdate={(updatedUser) => setProfile(updatedUser)}
+          // onUpdate={(updatedUser) => setProfile(updatedUser)}
+          onUpdate={(updatedUser) => setProfile(prev => prev ? { ...prev, ...updatedUser } : { ...prev!, ...updatedUser })}
         />
       )}
     </div>

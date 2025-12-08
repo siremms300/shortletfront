@@ -20,9 +20,14 @@ interface UserProfile {
   documents: Document[];
 }
 
+// interface DocumentVerificationProps {
+//   user: UserProfile;
+//   onUpdate: (user: UserProfile) => void;
+// }
+
 interface DocumentVerificationProps {
   user: UserProfile;
-  onUpdate: (user: UserProfile) => void;
+  onUpdate: (user: Partial<UserProfile>) => void;
 }
 
 const documentTypes = [
