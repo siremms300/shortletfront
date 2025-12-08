@@ -5,6 +5,39 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 import { bookingsAPI } from '@/lib/api';
 import { useAuth } from './AuthContext';
 
+// interface Booking {
+//   _id: string;
+//   property: {
+//     _id: string;
+//     title: string;
+//     location: string;
+//     images: Array<{ url: string }>;
+//     price: number;
+//     specifications: {
+//       maxGuests: number;
+//     };
+//   };
+//   checkIn: string;
+//   checkOut: string;
+//   guests: number;
+//   totalAmount: number;
+//   serviceFee: number;
+//   paymentStatus: string;
+//   bookingStatus: string;
+//   paymentMethod: 'paystack' | 'bank_transfer' | 'onsite'; // Added this line
+//   paymentReference: string;
+//   createdAt: string;
+//   accessPass?: {
+//     code?: string;
+//     providedBy?: string;
+//     sentAt?: string;
+//     expiresAt?: string;
+//     status: string;
+//     instructions?: string;
+//   };
+// } 
+
+// contexts/BookingContext.tsx - Update the Booking interface
 interface Booking {
   _id: string;
   property: {
@@ -24,7 +57,7 @@ interface Booking {
   serviceFee: number;
   paymentStatus: string;
   bookingStatus: string;
-  paymentMethod: 'paystack' | 'bank_transfer' | 'onsite'; // Added this line
+  paymentMethod: 'paystack' | 'bank_transfer' | 'onsite'; // Add this
   paymentReference: string;
   createdAt: string;
   accessPass?: {
@@ -35,6 +68,19 @@ interface Booking {
     status: string;
     instructions?: string;
   };
+  bankTransferDetails?: { // Add this
+    accountName?: string;
+    accountNumber?: string;
+    bankName?: string;
+    transferReference?: string;
+    proofOfPayment?: string;
+    status: string;
+  };
+  onsitePaymentDetails?: { // Add this
+    expectedAmount?: number;
+    status: string;
+  };
+  specialRequests?: string;
 }
 
 interface BookingContextType {
