@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useBooking } from '@/contexts/BookingContext';
 import Link from 'next/link';
+export const dynamic = 'force-dynamic';
+
+
 
 export default function PaymentSuccess() {
   const searchParams = useSearchParams();
