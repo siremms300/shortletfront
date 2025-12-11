@@ -373,33 +373,83 @@ export const propertiesAPI = {
 };
 
 // Amenities API calls
+// export const amenitiesAPI = {
+//   // Get all amenities
+//   getAmenities: async (params = {}) => {
+//     const response = await api.get('/amenities', { params });
+//     return response.data;
+//   },
+
+//   // Get amenity by ID
+//   getAmenityById: async (id) => {
+//     const response = await api.get(`/amenities/${id}`);
+//     return response.data;
+//   },
+
+//   // Create amenity
+//   createAmenity: async (amenityData) => {
+//     const response = await api.post('/amenities', amenityData);
+//     return response.data;
+//   },
+
+//   // Update amenity
+//   updateAmenity: async (id, amenityData) => {
+//     const response = await api.put(`/amenities/${id}`, amenityData);
+//     return response.data;
+//   },
+
+//   // Delete amenity
+//   deleteAmenity: async (id) => {
+//     const response = await api.delete(`/amenities/${id}`);
+//     return response.data;
+//   },
+
+//   // Get amenity categories
+//   getCategories: async () => {
+//     const response = await api.get('/amenities/categories');
+//     return response.data;
+//   },
+
+//   // Bulk create amenities (admin only)
+//   bulkCreateAmenities: async (amenities) => {
+//     const response = await api.post('/amenities/bulk', { amenities });
+//     return response.data;
+//   },
+
+//   // Hard delete amenity (admin only)
+//   hardDeleteAmenity: async (id) => {
+//     const response = await api.delete(`/amenities/admin/${id}/hard`);
+//     return response.data;
+//   }
+// };
+
 export const amenitiesAPI = {
   // Get all amenities
-  getAmenities: async (params = {}) => {
+  getAmenities: async (params: any = {}) => {
     const response = await api.get('/amenities', { params });
     return response.data;
   },
 
-  // Get amenity by ID
-  getAmenityById: async (id) => {
+  // Get amenity by ID - FIXED: Added type annotation
+  getAmenityById: async (id: string) => {
     const response = await api.get(`/amenities/${id}`);
     return response.data;
   },
 
-  // Create amenity
-  createAmenity: async (amenityData) => {
+  // Create amenity - FIXED: Added type annotation
+  createAmenity: async (amenityData: any) => {
     const response = await api.post('/amenities', amenityData);
     return response.data;
   },
 
-  // Update amenity
-  updateAmenity: async (id, amenityData) => {
+  // Update amenity - FIXED: Added type annotations
+  updateAmenity: async (id: string, amenityData: any) => {
     const response = await api.put(`/amenities/${id}`, amenityData);
     return response.data;
   },
 
-  // Delete amenity
-  deleteAmenity: async (id) => {
+  // Delete amenity - FIXED: Added type annotation
+  deleteAmenity: async (id: string) => {
     const response = await api.delete(`/amenities/${id}`);
     return response.data;
   },
@@ -410,14 +460,14 @@ export const amenitiesAPI = {
     return response.data;
   },
 
-  // Bulk create amenities (admin only)
-  bulkCreateAmenities: async (amenities) => {
+  // Bulk create amenities (admin only) - FIXED: Added type annotation
+  bulkCreateAmenities: async (amenities: any) => {
     const response = await api.post('/amenities/bulk', { amenities });
     return response.data;
   },
 
-  // Hard delete amenity (admin only)
-  hardDeleteAmenity: async (id) => {
+  // Hard delete amenity (admin only) - FIXED: Added type annotation
+  hardDeleteAmenity: async (id: string) => {
     const response = await api.delete(`/amenities/admin/${id}/hard`);
     return response.data;
   }

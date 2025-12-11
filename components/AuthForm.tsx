@@ -83,7 +83,7 @@ export default function AuthForm({ type }: AuthFormProps) {
         {/* Header */}
         <div className="text-center">
           <h2 className="text-3xl font-bold text-[#383a3c]">
-            {isLogin ? 'Welcome Back' : 'Create Account'}
+            {isLogin ? 'Welcome' : 'Create Account'}
           </h2>
           <p className="mt-2 text-gray-600">
             {isLogin ? 'Sign in to your account' : 'Sign up to get started'}
