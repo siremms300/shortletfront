@@ -475,9 +475,260 @@ export const amenitiesAPI = {
  
 
 // Booking API calls
+// export const bookingsAPI = {
+//   // Check availability
+//   checkAvailability: async (propertyId, checkIn, checkOut) => {
+//     const response = await api.get(`/bookings/property/${propertyId}/availability`, {
+//       params: { checkIn, checkOut }
+//     });
+//     return response.data;
+//   },
+
+//   // Create booking
+//   // createBooking: async (bookingData) => {
+//   //   const response = await api.post('/bookings', bookingData);
+//   //   return response.data;
+//   // },
+
+//   // lib/api.ts - Update createBooking function
+//   createBooking: async (bookingData: any) => {
+//     console.log('📤 [Frontend API] Creating booking:', bookingData);
+    
+//     try {
+//       const response = await api.post('/bookings', bookingData);
+//       console.log('📥 [Frontend API] Create booking response:', response.data);
+      
+//       // ✅ FIX: Handle backend response structure
+//       if (!response.data) {
+//         console.error('❌ [Frontend API] Empty response from server');
+//         throw new Error('No response from server');
+//       }
+      
+//       // Check if it's a success response
+//       if (response.data.success === false) {
+//         console.error('❌ [Frontend API] Server returned error:', response.data.message);
+//         throw new Error(response.data.message || 'Booking creation failed');
+//       }
+      
+//       // Success response - could be { success: true, ... } or just { message, booking }
+//       return response.data;
+      
+//     } catch (error: any) {
+//       console.error('💥 [Frontend API] Create booking error:', {
+//         message: error.message,
+//         response: error.response?.data,
+//         status: error.response?.status
+//       });
+//       throw error;
+//     }
+//   },
+
+//   // Initialize payment
+//   // initializePayment: async (bookingId, email) => {
+//   //   const response = await api.post(`/bookings/${bookingId}/initialize-payment`, { email });
+//   //   return response.data;
+//   // },
+
+//   // lib/api.ts - Update initializePayment function
+//   // initializePayment: async (bookingId: string, email: string) => {
+//   //   console.log('📤 [Frontend API] Initializing payment:', { bookingId, email });
+    
+//   //   try {
+//   //     const response = await api.post(`/bookings/${bookingId}/initialize-payment`, { email });
+//   //     console.log('📥 [Frontend API] Payment initialization response:', response.data);
+      
+//   //     if (!response.data.success) {
+//   //       console.error('❌ [Frontend API] Server returned error:', response.data.message);
+//   //       throw new Error(response.data.message || 'Payment initialization failed');
+//   //     }
+      
+//   //     // ✅ Now we can directly access authorization_url
+//   //     if (!response.data.authorization_url) {
+//   //       console.error('❌ [Frontend API] Missing authorization_url:', response.data);
+//   //       throw new Error('No payment URL received from server');
+//   //     }
+      
+//   //     return {
+//   //       authorization_url: response.data.authorization_url,
+//   //       reference: response.data.reference,
+//   //       access_code: response.data.access_code
+//   //     };
+//   //   } catch (error: any) {
+//   //     console.error('💥 [Frontend API] Payment initialization error:', {
+//   //       message: error.message,
+//   //       response: error.response?.data,
+//   //       status: error.response?.status
+//   //     });
+//   //     throw error;
+//   //   }
+//   // },
+
+//   // lib/api.ts - Update initializePayment function
+//   // initializePayment: async (bookingId: string, email: string) => {
+//   //   console.log('📤 [Frontend API] Initializing payment:', { bookingId, email });
+    
+//   //   try {
+//   //     const response = await api.post(`/bookings/${bookingId}/initialize-payment`, { email });
+//   //     console.log('📥 [Frontend API] Payment initialization response:', response.data);
+      
+//   //     // ✅ FIX: Check for success flag
+//   //     if (!response.data.success) {
+//   //       console.error('❌ [Frontend API] Server returned error:', response.data.message);
+//   //       throw new Error(response.data.message || 'Payment initialization failed');
+//   //     }
+      
+//   //     // ✅ FIX: Extract payment data from response
+//   //     if (!response.data.authorization_url) {
+//   //       console.error('❌ [Frontend API] Missing authorization_url:', response.data);
+//   //       throw new Error('No payment URL received from server');
+//   //     }
+      
+//   //     return {
+//   //       authorization_url: response.data.authorization_url,
+//   //       reference: response.data.reference,
+//   //       access_code: response.data.access_code
+//   //     };
+//   //   } catch (error: any) {
+//   //     console.error('💥 [Frontend API] Payment initialization error:', {
+//   //       message: error.message,
+//   //       response: error.response?.data,
+//   //       status: error.response?.status
+//   //     });
+//   //     throw error;
+//   //   }
+//   // },
+
+//   // lib/api.ts - Update initializePayment function
+//   initializePayment: async (bookingId: string, email: string) => {
+//     console.log('📤 [Frontend API] Initializing payment:', { bookingId, email });
+    
+//     try {
+//       const response = await api.post(`/bookings/${bookingId}/initialize-payment`, { email });
+//       console.log('📥 [Frontend API] Payment initialization response:', response.data);
+      
+//       // ✅ FIX: Check if response indicates success
+//       if (!response.data) {
+//         console.error('❌ [Frontend API] Empty response from server');
+//         throw new Error('No response from server');
+//       }
+      
+//       // Check if it's a success response
+//       if (response.data.success === false) {
+//         console.error('❌ [Frontend API] Server returned error:', response.data.message);
+//         throw new Error(response.data.message || 'Payment initialization failed');
+//       }
+      
+//       // Extract payment data from response
+//       const paymentData = {
+//         authorization_url: response.data.authorization_url,
+//         reference: response.data.reference,
+//         access_code: response.data.access_code
+//       };
+      
+//       if (!paymentData.authorization_url) {
+//         console.error('❌ [Frontend API] Missing authorization_url:', response.data);
+//         throw new Error('No payment URL received from server');
+//       }
+      
+//       console.log('✅ [Frontend API] Payment data extracted:', paymentData);
+//       return paymentData;
+      
+//     } catch (error: any) {
+//       console.error('💥 [Frontend API] Payment initialization error:', {
+//         message: error.message,
+//         response: error.response?.data,
+//         status: error.response?.status
+//       });
+//       throw error;
+//     }
+//   },
+
+//   // Verify payment
+//   verifyPayment: async (reference) => {
+//     const response = await api.post('/bookings/verify-payment', { reference });
+//     return response.data;
+//   },
+
+//   // In your lib/api.ts, add this to bookingsAPI
+//   // retryPayment: async (bookingId, email) => {
+//   //   const response = await api.post(`/bookings/${bookingId}/retry-payment`, { email });
+//   //   return response.data;
+//   // },
+
+//   // Get user bookings
+//   getUserBookings: async () => {
+//     const response = await api.get('/bookings/my-bookings');
+//     return response.data;
+//   },
+
+//   // Get booking by ID
+//   getBookingById: async (id) => {
+//     const response = await api.get(`/bookings/${id}`);
+//     return response.data;
+//   },
+
+//   // Cancel booking
+//   cancelBooking: async (id, cancellationReason) => {
+//     const response = await api.patch(`/bookings/${id}/cancel`, { cancellationReason });
+//     return response.data;
+//   },
+
+//   // Admin: Get all bookings
+//   getAdminBookings: async (params = {}) => {
+//     const response = await api.get('/bookings/admin/all', { params });
+//     return response.data;
+//   },
+
+//     uploadProofOfPayment: async (bookingId: string, proofFile: FormData) => {
+//     const response = await api.post(`/bookings/${bookingId}/upload-proof`, proofFile, {
+//       headers: { 'Content-Type': 'multipart/form-data' },
+//     });
+//     return response.data;
+//   },
+
+//   // Admin: Verify bank transfer
+//   verifyBankTransfer: async (bookingId: string, status: string) => {
+//     const response = await api.patch(`/bookings/admin/${bookingId}/verify-transfer`, { status });
+//     return response.data;
+//   },
+
+//   // Admin: Mark onsite payment as collected
+//   markOnsitePaymentCollected: async (bookingId: string, data: any) => {
+//     const response = await api.patch(`/bookings/admin/${bookingId}/mark-onsite-collected`, data);
+//     return response.data;
+//   },
+
+
+//    // Admin: Mark onsite payment as collected
+//   // markOnsitePaymentCollected: async (bookingId: string, data: {
+//   //   receiptNumber?: string;
+//   //   collectedAt?: string; // ISO string format
+//   // }) => {
+//   //   // Ensure collectedAt is valid ISO string
+//   //   const requestData = {
+//   //     ...data,
+//   //     collectedAt: data.collectedAt || new Date().toISOString()
+//   //   };
+    
+//   //   const response = await api.patch(`/bookings/admin/${bookingId}/mark-onsite-collected`, requestData);
+//   //   return response.data;
+//   // }
+
+
+
+  
+
+//   // Admin: Update booking status
+//   updateBookingStatus: async (id, status) => {
+//     const response = await api.patch(`/bookings/admin/${id}/status`, { status });
+//     return response.data;
+//   }
+// };
+
+// Booking API calls
 export const bookingsAPI = {
   // Check availability
-  checkAvailability: async (propertyId, checkIn, checkOut) => {
+  checkAvailability: async (propertyId: string, checkIn: string, checkOut: string) => {
     const response = await api.get(`/bookings/property/${propertyId}/availability`, {
       params: { checkIn, checkOut }
     });
@@ -485,12 +736,6 @@ export const bookingsAPI = {
   },
 
   // Create booking
-  // createBooking: async (bookingData) => {
-  //   const response = await api.post('/bookings', bookingData);
-  //   return response.data;
-  // },
-
-  // lib/api.ts - Update createBooking function
   createBooking: async (bookingData: any) => {
     console.log('📤 [Frontend API] Creating booking:', bookingData);
     
@@ -524,81 +769,6 @@ export const bookingsAPI = {
   },
 
   // Initialize payment
-  // initializePayment: async (bookingId, email) => {
-  //   const response = await api.post(`/bookings/${bookingId}/initialize-payment`, { email });
-  //   return response.data;
-  // },
-
-  // lib/api.ts - Update initializePayment function
-  // initializePayment: async (bookingId: string, email: string) => {
-  //   console.log('📤 [Frontend API] Initializing payment:', { bookingId, email });
-    
-  //   try {
-  //     const response = await api.post(`/bookings/${bookingId}/initialize-payment`, { email });
-  //     console.log('📥 [Frontend API] Payment initialization response:', response.data);
-      
-  //     if (!response.data.success) {
-  //       console.error('❌ [Frontend API] Server returned error:', response.data.message);
-  //       throw new Error(response.data.message || 'Payment initialization failed');
-  //     }
-      
-  //     // ✅ Now we can directly access authorization_url
-  //     if (!response.data.authorization_url) {
-  //       console.error('❌ [Frontend API] Missing authorization_url:', response.data);
-  //       throw new Error('No payment URL received from server');
-  //     }
-      
-  //     return {
-  //       authorization_url: response.data.authorization_url,
-  //       reference: response.data.reference,
-  //       access_code: response.data.access_code
-  //     };
-  //   } catch (error: any) {
-  //     console.error('💥 [Frontend API] Payment initialization error:', {
-  //       message: error.message,
-  //       response: error.response?.data,
-  //       status: error.response?.status
-  //     });
-  //     throw error;
-  //   }
-  // },
-
-  // lib/api.ts - Update initializePayment function
-  // initializePayment: async (bookingId: string, email: string) => {
-  //   console.log('📤 [Frontend API] Initializing payment:', { bookingId, email });
-    
-  //   try {
-  //     const response = await api.post(`/bookings/${bookingId}/initialize-payment`, { email });
-  //     console.log('📥 [Frontend API] Payment initialization response:', response.data);
-      
-  //     // ✅ FIX: Check for success flag
-  //     if (!response.data.success) {
-  //       console.error('❌ [Frontend API] Server returned error:', response.data.message);
-  //       throw new Error(response.data.message || 'Payment initialization failed');
-  //     }
-      
-  //     // ✅ FIX: Extract payment data from response
-  //     if (!response.data.authorization_url) {
-  //       console.error('❌ [Frontend API] Missing authorization_url:', response.data);
-  //       throw new Error('No payment URL received from server');
-  //     }
-      
-  //     return {
-  //       authorization_url: response.data.authorization_url,
-  //       reference: response.data.reference,
-  //       access_code: response.data.access_code
-  //     };
-  //   } catch (error: any) {
-  //     console.error('💥 [Frontend API] Payment initialization error:', {
-  //       message: error.message,
-  //       response: error.response?.data,
-  //       status: error.response?.status
-  //     });
-  //     throw error;
-  //   }
-  // },
-
-  // lib/api.ts - Update initializePayment function
   initializePayment: async (bookingId: string, email: string) => {
     console.log('📤 [Frontend API] Initializing payment:', { bookingId, email });
     
@@ -644,16 +814,16 @@ export const bookingsAPI = {
   },
 
   // Verify payment
-  verifyPayment: async (reference) => {
+  verifyPayment: async (reference: string) => {
     const response = await api.post('/bookings/verify-payment', { reference });
     return response.data;
   },
 
   // In your lib/api.ts, add this to bookingsAPI
-  // retryPayment: async (bookingId, email) => {
-  //   const response = await api.post(`/bookings/${bookingId}/retry-payment`, { email });
-  //   return response.data;
-  // },
+  retryPayment: async (bookingId: string, email: string) => {
+    const response = await api.post(`/bookings/${bookingId}/retry-payment`, { email });
+    return response.data;
+  },
 
   // Get user bookings
   getUserBookings: async () => {
@@ -662,24 +832,24 @@ export const bookingsAPI = {
   },
 
   // Get booking by ID
-  getBookingById: async (id) => {
+  getBookingById: async (id: string) => {
     const response = await api.get(`/bookings/${id}`);
     return response.data;
   },
 
   // Cancel booking
-  cancelBooking: async (id, cancellationReason) => {
+  cancelBooking: async (id: string, cancellationReason: string) => {
     const response = await api.patch(`/bookings/${id}/cancel`, { cancellationReason });
     return response.data;
   },
 
   // Admin: Get all bookings
-  getAdminBookings: async (params = {}) => {
+  getAdminBookings: async (params: any = {}) => {
     const response = await api.get('/bookings/admin/all', { params });
     return response.data;
   },
 
-    uploadProofOfPayment: async (bookingId: string, proofFile: FormData) => {
+  uploadProofOfPayment: async (bookingId: string, proofFile: FormData) => {
     const response = await api.post(`/bookings/${bookingId}/upload-proof`, proofFile, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
@@ -698,28 +868,8 @@ export const bookingsAPI = {
     return response.data;
   },
 
-
-   // Admin: Mark onsite payment as collected
-  // markOnsitePaymentCollected: async (bookingId: string, data: {
-  //   receiptNumber?: string;
-  //   collectedAt?: string; // ISO string format
-  // }) => {
-  //   // Ensure collectedAt is valid ISO string
-  //   const requestData = {
-  //     ...data,
-  //     collectedAt: data.collectedAt || new Date().toISOString()
-  //   };
-    
-  //   const response = await api.patch(`/bookings/admin/${bookingId}/mark-onsite-collected`, requestData);
-  //   return response.data;
-  // }
-
-
-
-  
-
   // Admin: Update booking status
-  updateBookingStatus: async (id, status) => {
+  updateBookingStatus: async (id: string, status: string) => {
     const response = await api.patch(`/bookings/admin/${id}/status`, { status });
     return response.data;
   }
