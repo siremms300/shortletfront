@@ -188,11 +188,11 @@ const PaymentMethodModal = ({
                     </div>
                     <div>
                       <span className="text-gray-600 text-sm">Account Number:</span>
-                      <p className="font-medium text-lg">0900408855</p>
+                      <p className="font-medium text-lg">0094639347</p>
                     </div>
                     <div>
                       <span className="text-gray-600 text-sm">Bank:</span>
-                      <p className="font-medium">GT Bank</p>
+                      <p className="font-medium">Sterling Bank</p>
                     </div>
                   </div>
                   <p className="text-sm text-gray-500 mt-3">
@@ -442,8 +442,8 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
         // Show success message with bank details
         const bankDetails = bookingResponse.bankDetails || {
           accountName: 'Hols Apartments Ltd',
-          accountNumber: '0900408855',
-          bankName: 'GT Bank',
+          accountNumber: '0094639347',
+          bankName: 'Sterling Bank',
           transferReference: bookingResponse.booking?.bankTransferDetails?.transferReference || ''
         };
         
@@ -558,7 +558,7 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
                     <>
                       <span>Reserve Now</span>
                       <span className="text-xl">•</span>
-                      <span>${property.price}/night</span>
+                      <span>₦{property.price}/night</span>
                       <svg 
                         className="w-5 h-5 ml-1 animate-bounce" 
                         fill="none" 
@@ -661,7 +661,7 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
         <div className="lg:col-span-1" ref={bookingCardRef}>
           <div className="sticky top-24 border border-gray-200 rounded-2xl p-6 shadow-xl bg-white">
             <div className="mb-6">
-              <span className="text-3xl font-bold text-[#383a3c]">${property.price}</span>
+              <span className="text-3xl font-bold text-[#383a3c]">₦{property.price}</span>
               <span className="text-gray-600 text-lg"> / night</span>
             </div>
 
@@ -749,7 +749,7 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
                 {totalNights > 0 && (
                   <div className="border-t border-gray-200 pt-4 space-y-3">
                     <div className="flex justify-between text-gray-700">
-                      <span>${property.price} x {totalNights} nights</span>
+                      <span>₦{property.price} x {totalNights} nights</span>
                       <span>${totalPrice.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-gray-700">
@@ -772,7 +772,7 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
             {/* Extra Info */}
             <div className="mt-6 pt-6 border-t border-gray-200">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-gray-600">Free cancellation</span>
+                {/* <span className="text-gray-600">Free cancellation</span> */}
                 <span className="font-semibold">Before 24 hours</span>
               </div>
               <div className="flex items-center justify-between">
