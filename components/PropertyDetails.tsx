@@ -244,7 +244,6 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
   const { createBooking, initializePayment, checkAvailability } = useBooking();
   const router = useRouter();
   
-  const [selectedImage, setSelectedImage] = useState(0);
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   const [guests, setGuests] = useState(1);
@@ -259,10 +258,24 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
   // Ref for the booking card to scroll to
   const bookingCardRef = useRef<HTMLDivElement>(null);
 
-  // Transform backend data to frontend format
-  const propertyImages = property.images?.map(img => img.url) || [];
-  const mainImage = property.images?.find(img => img.isMain)?.url || property.images?.[0]?.url || '/default-property.jpg';
-  
+  // Sort images to show main image first, then by order
+  const sortedImages = [...property.images || []].sort((a, b) => {
+    if (a.isMain) return -1;
+    if (b.isMain) return 1;
+    return (a.order || 0) - (b.order || 0);
+  });
+
+  // Get initial main image (first image that isMain: true, or first image)
+  const initialMainImage = sortedImages.find(img => img.isMain) || sortedImages[0];
+  const [mainImage, setMainImage] = useState(initialMainImage?.url || '/default-property.jpg');
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+  // Update main image when a thumbnail is clicked
+  const handleThumbnailClick = (imageUrl: string, index: number) => {
+    setMainImage(imageUrl);
+    setSelectedImageIndex(index);
+  };
+
   const hostInfo = {
     name: `${property.owner?.firstName || 'Host'} ${property.owner?.lastName || ''}`.trim(),
     image: property.owner?.profileImagePath || "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150",
@@ -517,23 +530,34 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
             </div>
             
             {/* Thumbnail Images - Horizontal Scroll */}
-            {propertyImages.length > 1 && (
+            {sortedImages.length > 1 && (
               <div className="flex space-x-2 overflow-x-auto pb-2">
-                {propertyImages.map((image, index) => (
-                  <div
-                    key={index}
-                    className={`flex-shrink-0 cursor-pointer border-2 ${
-                      selectedImage === index ? 'border-[#f06123]' : 'border-transparent'
-                    } rounded-lg overflow-hidden`}
-                    onClick={() => setSelectedImage(index)}
+                {sortedImages.map((image, index) => (
+                  <button
+                    key={image.url || index}
+                    className={`flex-shrink-0 cursor-pointer border-2 transition-all duration-200 rounded-lg overflow-hidden ${
+                      selectedImageIndex === index 
+                        ? 'border-[#f06123] ring-2 ring-[#f06123] ring-opacity-50 scale-105' 
+                        : 'border-transparent hover:border-gray-300'
+                    }`}
+                    onClick={() => handleThumbnailClick(image.url, index)}
+                    aria-label={`View image ${index + 1}`}
                   >
                     <img
-                      src={image}
+                      src={image.url}
                       alt={`${property.title} ${index + 1}`}
-                      className="w-20 h-16 object-cover hover:opacity-90 transition-opacity"
+                      className="w-24 h-20 object-cover hover:opacity-90 transition-opacity"
                     />
-                  </div>
+                  </button>
                 ))}
+              </div>
+            )}
+
+            {/* Image Counter */}
+            {sortedImages.length > 0 && (
+              <div className="mt-3 text-sm text-gray-600">
+                <span className="font-medium">{selectedImageIndex + 1}</span> of{' '}
+                <span className="font-medium">{sortedImages.length}</span> photos
               </div>
             )}
 
@@ -750,15 +774,15 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
                   <div className="border-t border-gray-200 pt-4 space-y-3">
                     <div className="flex justify-between text-gray-700">
                       <span>₦{property.price} x {totalNights} nights</span>
-                      <span>${totalPrice.toFixed(2)}</span>
+                      <span>₦{totalPrice.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-gray-700">
                       <span>Service fee</span>
-                      <span>${(totalPrice * 0.1).toFixed(2)}</span>
+                      <span>₦{(totalPrice * 0.1).toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between font-bold text-lg border-t border-gray-200 pt-3">
                       <span>Total</span>
-                      <span>${(totalPrice * 1.1).toFixed(2)}</span>
+                      <span>₦{(totalPrice * 1.1).toFixed(2)}</span>
                     </div>
                   </div>
                 )}
@@ -772,7 +796,7 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
             {/* Extra Info */}
             <div className="mt-6 pt-6 border-t border-gray-200">
               <div className="flex items-center justify-between mb-2">
-                {/* <span className="text-gray-600">Free cancellation</span> */}
+                <span className="text-gray-600">Free cancellation</span>
                 <span className="font-semibold">Before 24 hours</span>
               </div>
               <div className="flex items-center justify-between">
@@ -814,6 +838,910 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// 'use client';
+
+// import { useState, useRef, useEffect } from 'react';
+// import { useAuth } from '@/contexts/AuthContext';
+// import { useBooking } from '@/contexts/BookingContext';
+// import { useRouter } from 'next/navigation';
+// import ReviewsSection from './ReviewsSection';
+
+// interface Amenity {
+//   _id: string;
+//   name: string;
+//   description?: string;
+//   icon?: string;
+//   category: string;
+// }
+
+// interface Property {
+//   _id: string;
+//   title: string;
+//   location: string;
+//   price: number;
+//   images: Array<{
+//     url: string;
+//     isMain: boolean;
+//     order: number;
+//   }>;
+//   rating: number;
+//   totalBookings: number;
+//   description: string;
+//   owner: {
+//     _id: string;
+//     firstName: string;
+//     lastName: string;
+//     profileImagePath?: string;
+//     joined?: string;
+//     rating?: number;
+//     properties?: number;
+//   };
+//   amenities: Amenity[];
+//   specifications: {
+//     maxGuests: number;
+//     bedrooms: number;
+//     bathrooms: number;
+//     squareFeet: number;
+//   };
+//   type: string;
+//   status: string;
+// }
+
+// interface Review {
+//   id: number;
+//   user: {
+//     name: string;
+//     image: string;
+//   };
+//   rating: number;
+//   comment: string;
+//   date: string;
+//   helpful: number;
+// }
+
+// interface PropertyDetailsProps {
+//   property: Property;
+// }
+
+// // Sample reviews data
+// const sampleReviews: Review[] = [
+//   {
+//     id: 1,
+//     user: {
+//       name: "Michael Chen",
+//       image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150"
+//     },
+//     rating: 5,
+//     comment: "Amazing apartment! The location was perfect and the host was very responsive. The apartment was clean and had everything we needed for our stay. Would definitely book again!",
+//     date: "2024-01-15",
+//     helpful: 12
+//   },
+//   {
+//     id: 2,
+//     user: {
+//       name: "Sarah Williams",
+//       image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150"
+//     },
+//     rating: 4,
+//     comment: "Great value for money. The apartment was spacious and well-maintained. The pool and gym facilities were excellent. Only minor issue was the Wi-Fi was a bit slow in the evenings.",
+//     date: "2024-01-10",
+//     helpful: 8
+//   },
+//   {
+//     id: 3,
+//     user: {
+//       name: "David Johnson",
+//       image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150"
+//     },
+//     rating: 5,
+//     comment: "Perfect stay! The apartment exceeded our expectations. The view was stunning and everything was exactly as described. Host was very helpful with local recommendations.",
+//     date: "2024-01-05",
+//     helpful: 15
+//   }
+// ];
+
+// // Default house rules
+// const defaultRules = [
+//   "No smoking",
+//   "No pets",
+//   "No parties or events",
+//   "Check-in after 2:00 PM",
+//   "Check-out before 11:00 AM"
+// ];
+
+// // Payment Method Modal Component
+// const PaymentMethodModal = ({ 
+//   isOpen, 
+//   onClose, 
+//   onSelectMethod 
+// }: { 
+//   isOpen: boolean;
+//   onClose: () => void;
+//   onSelectMethod: (method: 'paystack' | 'bank_transfer' | 'onsite') => void;
+// }) => {
+//   const [showBankDetails, setShowBankDetails] = useState(false);
+
+//   if (!isOpen) return null;
+
+//   return (
+//     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+//       <div className="bg-white rounded-2xl max-w-md w-full p-6">
+//         <div className="flex justify-between items-center mb-4">
+//           <h3 className="text-xl font-semibold text-[#383a3c]">Select Payment Method</h3>
+//           <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+//             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+//             </svg>
+//           </button>
+//         </div>
+
+//         <div className="space-y-3">
+//           {/* Pay Online (Paystack) */}
+//           <button
+//             onClick={() => onSelectMethod('paystack')}
+//             className="w-full border border-gray-300 rounded-lg p-4 hover:bg-gray-50 transition duration-200 text-left"
+//           >
+//             <div className="flex items-center">
+//               <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+//                 <span className="text-blue-600 text-lg">💳</span>
+//               </div>
+//               <div>
+//                 <h4 className="font-semibold text-[#383a3c]">Pay Online</h4>
+//                 <p className="text-gray-600 text-sm">Pay instantly with card or bank transfer via Paystack</p>
+//               </div>
+//             </div>
+//           </button>
+
+//           {/* Bank Transfer */}
+//           <div className="border border-gray-300 rounded-lg overflow-hidden">
+//             <button
+//               onClick={() => setShowBankDetails(!showBankDetails)}
+//               className="w-full p-4 hover:bg-gray-50 transition duration-200 text-left flex items-center justify-between"
+//             >
+//               <div className="flex items-center">
+//                 <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+//                   <span className="text-green-600 text-lg">🏦</span>
+//                 </div>
+//                 <div>
+//                   <h4 className="font-semibold text-[#383a3c]">Transfer to Company Account</h4>
+//                   <p className="text-gray-600 text-sm">Make direct bank transfer</p>
+//                 </div>
+//               </div>
+//               <svg 
+//                 className={`w-5 h-5 text-gray-400 transform transition-transform ${showBankDetails ? 'rotate-180' : ''}`}
+//                 fill="none" 
+//                 stroke="currentColor" 
+//                 viewBox="0 0 24 24"
+//               >
+//                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+//               </svg>
+//             </button>
+            
+//             {showBankDetails && (
+//               <div className="px-4 pb-4 border-t border-gray-200">
+//                 <div className="mt-4 bg-gray-50 rounded-lg p-4">
+//                   <h5 className="font-semibold text-gray-700 mb-2">Bank Account Details:</h5>
+//                   <div className="space-y-2">
+//                     <div>
+//                       <span className="text-gray-600 text-sm">Account Name:</span>
+//                       <p className="font-medium">Hols Apartments Ltd</p>
+//                     </div>
+//                     <div>
+//                       <span className="text-gray-600 text-sm">Account Number:</span>
+//                       <p className="font-medium text-lg">0094639347</p>
+//                     </div>
+//                     <div>
+//                       <span className="text-gray-600 text-sm">Bank:</span>
+//                       <p className="font-medium">Sterling Bank</p>
+//                     </div>
+//                   </div>
+//                   <p className="text-sm text-gray-500 mt-3">
+//                     After transfer, upload proof of payment in your dashboard. Booking will be confirmed after verification.
+//                   </p>
+//                 </div>
+//                 <button
+//                   onClick={() => onSelectMethod('bank_transfer')}
+//                   className="w-full mt-4 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition duration-200"
+//                 >
+//                   Proceed with Bank Transfer
+//                 </button>
+//               </div>
+//             )}
+//           </div>
+
+//           {/* Pay Onsite */}
+//           <button
+//             onClick={() => onSelectMethod('onsite')}
+//             className="w-full border border-gray-300 rounded-lg p-4 hover:bg-gray-50 transition duration-200 text-left"
+//           >
+//             <div className="flex items-center">
+//               <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center mr-3">
+//                 <span className="text-yellow-600 text-lg">🏠</span>
+//               </div>
+//               <div>
+//                 <h4 className="font-semibold text-[#383a3c]">Pay Onsite</h4>
+//                 <p className="text-gray-600 text-sm">Pay cash at the property during check-in</p>
+//               </div>
+//             </div>
+//           </button>
+//         </div>
+
+//         <div className="mt-6 pt-4 border-t border-gray-200">
+//           <button
+//             onClick={onClose}
+//             className="w-full border border-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-50 transition duration-200"
+//           >
+//             Cancel
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default function PropertyDetails({ property }: PropertyDetailsProps) {
+//   const { user } = useAuth();
+//   const { createBooking, initializePayment, checkAvailability } = useBooking();
+//   const router = useRouter();
+  
+//   const [selectedImage, setSelectedImage] = useState(0);
+//   const [checkIn, setCheckIn] = useState('');
+//   const [checkOut, setCheckOut] = useState('');
+//   const [guests, setGuests] = useState(1);
+//   const [reviews, setReviews] = useState<Review[]>(sampleReviews);
+//   const [showReserveButton, setShowReserveButton] = useState(true);
+//   const [loading, setLoading] = useState(false);
+//   const [availabilityError, setAvailabilityError] = useState('');
+//   const [bookingError, setBookingError] = useState('');
+//   const [showPaymentModal, setShowPaymentModal] = useState(false);
+//   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'paystack' | 'bank_transfer' | 'onsite' | null>(null);
+  
+//   // Ref for the booking card to scroll to
+//   const bookingCardRef = useRef<HTMLDivElement>(null);
+
+//   // Transform backend data to frontend format
+//   const propertyImages = property.images?.map(img => img.url) || [];
+//   const mainImage = property.images?.find(img => img.isMain)?.url || property.images?.[0]?.url || '/default-property.jpg';
+  
+//   const hostInfo = {
+//     name: `${property.owner?.firstName || 'Host'} ${property.owner?.lastName || ''}`.trim(),
+//     image: property.owner?.profileImagePath || "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150",
+//     joined: "2022",
+//     rating: 4.9,
+//     properties: 12
+//   };
+
+//   const specs = {
+//     guests: property.specifications?.maxGuests || 1,
+//     bedrooms: property.specifications?.bedrooms || 0,
+//     beds: property.specifications?.bedrooms || 0,
+//     bathrooms: property.specifications?.bathrooms || 0
+//   };
+
+//   const totalNights = checkIn && checkOut ? 
+//     Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24)) : 0;
+//   const totalPrice = totalNights * property.price;
+
+//   // Calculate rating breakdown
+//   const ratingBreakdown = {
+//     5: reviews.filter(r => r.rating === 5).length,
+//     4: reviews.filter(r => r.rating === 4).length,
+//     3: reviews.filter(r => r.rating === 3).length,
+//     2: reviews.filter(r => r.rating === 2).length,
+//     1: reviews.filter(r => r.rating === 1).length
+//   };
+
+//   const handleAddReview = (newReview: Omit<Review, 'id' | 'helpful' | 'date'>) => {
+//     const review: Review = {
+//       ...newReview,
+//       id: reviews.length + 1,
+//       date: new Date().toISOString().split('T')[0],
+//       helpful: 0
+//     };
+//     setReviews([review, ...reviews]);
+//   };
+
+//   const handleHelpfulClick = (reviewId: number) => {
+//     setReviews(reviews.map(review => 
+//       review.id === reviewId 
+//         ? { ...review, helpful: review.helpful + 1 }
+//         : review
+//     ));
+//   };
+
+//   // Function to scroll to booking card
+//   const scrollToBookingCard = () => {
+//     bookingCardRef.current?.scrollIntoView({ 
+//       behavior: 'smooth',
+//       block: 'start'
+//     });
+//   };
+
+//   // Effect to hide/show reserve button based on scroll position
+//   useEffect(() => {
+//     const handleScroll = () => {
+//       if (bookingCardRef.current) {
+//         const bookingCardRect = bookingCardRef.current.getBoundingClientRect();
+//         const buttonHeight = 80;
+        
+//         const isBookingCardVisible = bookingCardRect.top < window.innerHeight - buttonHeight;
+//         setShowReserveButton(!isBookingCardVisible);
+//       }
+//     };
+
+//     window.addEventListener('scroll', handleScroll);
+//     handleScroll();
+
+//     return () => {
+//       window.removeEventListener('scroll', handleScroll);
+//     };
+//   }, []);
+
+//   // Check availability when dates change
+//   useEffect(() => {
+//     if (checkIn && checkOut) {
+//       handleCheckAvailability();
+//     }
+//   }, [checkIn, checkOut]);
+
+//   const handleCheckAvailability = async () => {
+//     try {
+//       setAvailabilityError('');
+//       const isAvailable = await checkAvailability(property._id, checkIn, checkOut);
+//       if (!isAvailable) {
+//         setAvailabilityError('Property not available for selected dates');
+//       }
+//     } catch (error: any) {
+//       setAvailabilityError(error.message);
+//     }
+//   };
+
+//   const handleReserve = async (e?: React.MouseEvent) => {
+//     if (e) {
+//       e.preventDefault();
+//       e.stopPropagation();
+//     }
+
+//     if (!user) {
+//       router.push('/login');
+//       return;
+//     }
+
+//     if (!checkIn || !checkOut) {
+//       alert('Please select check-in and check-out dates');
+//       return;
+//     }
+
+//     if (availabilityError) {
+//       alert(availabilityError);
+//       return;
+//     }
+
+//     // Show payment method modal
+//     setShowPaymentModal(true);
+//   };
+
+//   const handlePaymentMethodSelect = async (method: 'paystack' | 'bank_transfer' | 'onsite') => {
+//     // Safety check for user
+//     if (!user) {
+//       router.push('/login');
+//       return;
+//     }
+    
+//     setSelectedPaymentMethod(method);
+//     setShowPaymentModal(false);
+    
+//     try {
+//       setLoading(true);
+//       setBookingError('');
+      
+//       // Create booking with selected payment method
+//       const bookingData = {
+//         propertyId: property._id,
+//         checkIn,
+//         checkOut,
+//         guests,
+//         specialRequests: '',
+//         paymentMethod: method
+//       };
+
+//       console.log('Creating booking with payment method:', method);
+
+//       const bookingResponse = await createBooking(bookingData);
+//       console.log('Booking response:', bookingResponse);
+      
+//       // Extract booking ID
+//       let bookingId;
+//       if (bookingResponse.booking?._id) {
+//         bookingId = bookingResponse.booking._id;
+//       } else if (bookingResponse._id) {
+//         bookingId = bookingResponse._id;
+//       }
+
+//       if (!bookingId) {
+//         throw new Error('Booking created but no booking ID received');
+//       }
+
+//       console.log('Booking ID:', bookingId);
+
+//       // Handle different payment methods
+//       if (method === 'paystack') {
+//         // Initialize Paystack payment - user is guaranteed to be non-null here
+//         const paymentData = await initializePayment(bookingId, user.email);
+        
+//         if (!paymentData?.authorization_url) {
+//           throw new Error('Payment gateway is currently unavailable. Please try again.');
+//         }
+
+//         console.log('Redirecting to Paystack...');
+//         setTimeout(() => {
+//           window.open(paymentData.authorization_url, '_self');
+//         }, 100);
+
+//       } else if (method === 'bank_transfer') {
+//         // Show success message with bank details
+//         const bankDetails = bookingResponse.bankDetails || {
+//           accountName: 'Hols Apartments Ltd',
+//           accountNumber: '0094639347',
+//           bankName: 'Sterling Bank',
+//           transferReference: bookingResponse.booking?.bankTransferDetails?.transferReference || ''
+//         };
+        
+//         alert(`Booking created successfully!\n\nPlease transfer ₦${bookingResponse.booking?.totalAmount?.toLocaleString()} to:\nAccount Name: ${bankDetails.accountName}\nAccount Number: ${bankDetails.accountNumber}\nBank: ${bankDetails.bankName}\nReference: ${bankDetails.transferReference}\n\nAfter transfer, upload proof of payment in your dashboard.`);
+        
+//         // Redirect to upload proof page
+//         router.push(`/dashboard/bookings/${bookingId}/upload-proof`);
+        
+//       } else if (method === 'onsite') {
+//         // Show success message and redirect to bookings
+//         alert('Booking created successfully! Please proceed to the property for check-in and payment.');
+//         router.push('/dashboard/bookings');
+//       }
+
+//     } catch (error: any) {
+//       console.error('Error during reservation:', error.message);
+      
+//       let userMessage = error.message || 'Failed to process booking. Please try again.';
+//       setBookingError(userMessage);
+//       alert(userMessage);
+//     } finally {
+//       setLoading(false);
+//       setSelectedPaymentMethod(null);
+//     }
+//   };
+
+//   // Format date for input min attribute
+//   const getMinDate = () => {
+//     const today = new Date();
+//     today.setDate(today.getDate() + 1); // Minimum check-in is tomorrow
+//     return today.toISOString().split('T')[0];
+//   };
+
+//   const getMinCheckoutDate = () => {
+//     if (!checkIn) return getMinDate();
+//     const checkInDate = new Date(checkIn);
+//     checkInDate.setDate(checkInDate.getDate() + 1); // Check-out must be at least 1 day after check-in
+//     return checkInDate.toISOString().split('T')[0];
+//   };
+
+//   return (
+//     <div className="max-w-7xl mx-auto px-4 py-8">
+//       {/* Header */}
+//       <div className="mb-6">
+//         <h1 className="text-3xl font-bold text-[#383a3c] mb-2">{property.title}</h1>
+//         <div className="flex items-center space-x-4 flex-wrap">
+//           <div className="flex items-center">
+//             <span className="text-[#f06123]">★</span>
+//             <span className="ml-1 font-semibold">{property.rating || 'New'}</span>
+//             <span className="ml-1 text-gray-600">({property.totalBookings || 0} bookings)</span>
+//           </div>
+//           <span className="text-gray-600 hidden sm:inline">•</span>
+//           <span className="text-gray-600 capitalize">{property.type}</span>
+//           <span className="text-gray-600 hidden sm:inline">•</span>
+//           <span className="text-gray-600">{property.location}</span>
+//         </div>
+//       </div>
+
+//       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+//         {/* Left Column - Images & Details */}
+//         <div className="lg:col-span-2">
+//           {/* Main Image Gallery */}
+//           <div className="mb-8">
+//             {/* Main Large Image */}
+//             <div className="mb-4">
+//               <img
+//                 src={mainImage}
+//                 alt={property.title}
+//                 className="w-full h-96 object-cover rounded-2xl shadow-lg"
+//               />
+//             </div>
+            
+//             {/* Thumbnail Images - Horizontal Scroll */}
+//             {propertyImages.length > 1 && (
+//               <div className="flex space-x-2 overflow-x-auto pb-2">
+//                 {propertyImages.map((image, index) => (
+//                   <div
+//                     key={index}
+//                     className={`flex-shrink-0 cursor-pointer border-2 ${
+//                       selectedImage === index ? 'border-[#f06123]' : 'border-transparent'
+//                     } rounded-lg overflow-hidden`}
+//                     onClick={() => setSelectedImage(index)}
+//                   >
+//                     <img
+//                       src={image}
+//                       alt={`${property.title} ${index + 1}`}
+//                       className="w-20 h-16 object-cover hover:opacity-90 transition-opacity"
+//                     />
+//                   </div>
+//                 ))}
+//               </div>
+//             )}
+
+//             {/* Mobile Reserve Now Button - FIXED */}
+//             {showReserveButton && (
+//               <div className="lg:hidden fixed bottom-6 left-4 right-4 z-40 animate-fade-in">
+//                 <button
+//                   onClick={(e) => handleReserve(e)}  
+//                   disabled={loading || !!availabilityError || !!bookingError}
+//                   className={`w-full ${
+//                     loading || availabilityError || bookingError
+//                       ? 'bg-gray-400 cursor-not-allowed' 
+//                       : 'bg-[#f06123] hover:bg-orange-600'
+//                   } text-[#fcfeff] py-4 rounded-xl font-semibold transition duration-200 text-lg shadow-lg flex items-center justify-center space-x-2 animate-bounce-subtle`}
+//                 >
+//                   {loading ? (
+//                     <span className="flex items-center">
+//                       <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+//                       Processing...
+//                     </span>
+//                   ) : (
+//                     <>
+//                       <span>Reserve Now</span>
+//                       <span className="text-xl">•</span>
+//                       <span>₦{property.price}/night</span>
+//                       <svg 
+//                         className="w-5 h-5 ml-1 animate-bounce" 
+//                         fill="none" 
+//                         stroke="currentColor" 
+//                         viewBox="0 0 24 24"
+//                       >
+//                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+//                       </svg>
+//                     </>
+//                   )}
+//                 </button>
+//               </div>
+//             )}
+//           </div>
+
+//           {/* Property Details */}
+//           <div className="space-y-8">
+//             {/* Host Info */}
+//             <div className="border-b border-gray-200 pb-6">
+//               <div className="flex items-center justify-between">
+//                 <div>
+//                   <h2 className="text-xl font-semibold text-[#383a3c] mb-2">
+//                     Hosted by {hostInfo.name}
+//                   </h2>
+//                   <div className="flex items-center space-x-4 text-gray-600 flex-wrap gap-2">
+//                     <span>{specs.guests} guests</span>
+//                     <span>•</span>
+//                     <span>{specs.bedrooms} bedrooms</span>
+//                     <span>•</span>
+//                     <span>{specs.beds} beds</span>
+//                     <span>•</span>
+//                     <span>{specs.bathrooms} bathrooms</span>
+//                     {property.specifications?.squareFeet && (
+//                       <>
+//                         <span>•</span>
+//                         <span>{property.specifications.squareFeet} sq ft</span>
+//                       </>
+//                     )}
+//                   </div>
+//                 </div>
+//                 <img
+//                   src={hostInfo.image}
+//                   alt={hostInfo.name}
+//                   className="w-12 h-12 rounded-full"
+//                 />
+//               </div>
+//             </div>
+
+//             {/* Description */}
+//             <div className="border-b border-gray-200 pb-6">
+//               <h3 className="text-xl font-semibold text-[#383a3c] mb-4">About this place</h3>
+//               <p className="text-gray-700 leading-relaxed text-lg">{property.description}</p>
+//             </div>
+
+//             {/* Amenities - Updated to handle amenity objects */}
+//             {property.amenities && property.amenities.length > 0 && (
+//               <div className="border-b border-gray-200 pb-6">
+//                 <h3 className="text-xl font-semibold text-[#383a3c] mb-4">What this place offers</h3>
+//                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+//                   {property.amenities.map((amenity) => (
+//                     <div key={amenity._id} className="flex items-center">
+//                       <span className="text-[#f06123] mr-3 text-xl">
+//                         {amenity.icon || '✓'}
+//                       </span>
+//                       <div>
+//                         <span className="text-gray-700 text-lg">{amenity.name}</span>
+//                         {amenity.description && (
+//                           <p className="text-sm text-gray-500 mt-1">{amenity.description}</p>
+//                         )}
+//                       </div>
+//                     </div>
+//                   ))}
+//                 </div>
+//               </div>
+//             )}
+
+//             {/* House Rules */}
+//             <div className="border-b border-gray-200 pb-6">
+//               <h3 className="text-xl font-semibold text-[#383a3c] mb-4">House Rules</h3>
+//               <ul className="list-disc list-inside text-gray-700 space-y-2 text-lg">
+//                 {defaultRules.map((rule, index) => (
+//                   <li key={index}>{rule}</li>
+//                 ))}
+//               </ul>
+//             </div>
+
+//             {/* Reviews Section */}
+//             <ReviewsSection
+//               reviews={reviews}
+//               ratingBreakdown={ratingBreakdown}
+//               averageRating={property.rating || 0}
+//               totalReviews={reviews.length}
+//               onAddReview={handleAddReview}
+//               onHelpfulClick={handleHelpfulClick}
+//             />
+//           </div>
+//         </div>
+
+//         {/* Right Column - Booking Card */}
+//         <div className="lg:col-span-1" ref={bookingCardRef}>
+//           <div className="sticky top-24 border border-gray-200 rounded-2xl p-6 shadow-xl bg-white">
+//             <div className="mb-6">
+//               <span className="text-3xl font-bold text-[#383a3c]">₦{property.price}</span>
+//               <span className="text-gray-600 text-lg"> / night</span>
+//             </div>
+
+//             {/* Booking Form */}
+//             <form onSubmit={(e) => e.preventDefault()}>
+//               <div className="space-y-4">
+//                 {/* Date Picker */}
+//                 <div className="grid grid-cols-2 gap-3">
+//                   <div>
+//                     <label className="block text-sm font-medium text-gray-700 mb-2">Check-in</label>
+//                     <input
+//                       type="date"
+//                       value={checkIn}
+//                       onChange={(e) => setCheckIn(e.target.value)}
+//                       min={getMinDate()}
+//                       className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#f06123] focus:border-transparent"
+//                       required
+//                     />
+//                   </div>
+//                   <div>
+//                     <label className="block text-sm font-medium text-gray-700 mb-2">Check-out</label>
+//                     <input
+//                       type="date"
+//                       value={checkOut}
+//                       onChange={(e) => setCheckOut(e.target.value)}
+//                       min={getMinCheckoutDate()}
+//                       className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#f06123] focus:border-transparent"
+//                       required
+//                     />
+//                   </div>
+//                 </div>
+
+//                 {/* Guests */}
+//                 <div>
+//                   <label className="block text-sm font-medium text-gray-700 mb-2">Guests</label>
+//                   <select
+//                     value={guests}
+//                     onChange={(e) => setGuests(Number(e.target.value))}
+//                     className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#f06123] focus:border-transparent"
+//                   >
+//                     {Array.from({ length: specs.guests }, (_, i) => i + 1).map(num => (
+//                       <option key={num} value={num}>{num} {num === 1 ? 'guest' : 'guests'}</option>
+//                     ))}
+//                   </select>
+//                 </div>
+
+//                 {/* Availability Error */}
+//                 {availabilityError && (
+//                   <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+//                     <p className="text-red-600 text-sm text-center">{availabilityError}</p>
+//                   </div>
+//                 )}
+
+//                 {/* Booking Error */}
+//                 {bookingError && (
+//                   <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+//                     <p className="text-red-600 text-sm text-center">{bookingError}</p>
+//                   </div>
+//                 )}
+
+//                 {/* Reserve Button - Main */}
+//                 <button 
+//                   type="button" 
+//                   onClick={(e) => handleReserve(e)}
+//                   disabled={loading || !!availabilityError || !!bookingError}
+//                   className={`w-full ${
+//                     loading || availabilityError || bookingError
+//                       ? 'bg-gray-400 cursor-not-allowed' 
+//                       : 'bg-[#f06123] hover:bg-orange-600'
+//                   } text-[#fcfeff] py-4 rounded-lg font-semibold transition duration-200 text-lg shadow-md`}
+//                 >
+//                   {loading ? (
+//                     <div className="flex items-center justify-center">
+//                       <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+//                       Processing...
+//                     </div>
+//                   ) : availabilityError || bookingError ? (
+//                     'Not Available'
+//                   ) : (
+//                     'Reserve Now'
+//                   )}
+//                 </button>
+
+//                 {/* Price Breakdown */}
+//                 {totalNights > 0 && (
+//                   <div className="border-t border-gray-200 pt-4 space-y-3">
+//                     <div className="flex justify-between text-gray-700">
+//                       <span>₦{property.price} x {totalNights} nights</span>
+//                       <span>${totalPrice.toFixed(2)}</span>
+//                     </div>
+//                     <div className="flex justify-between text-gray-700">
+//                       <span>Service fee</span>
+//                       <span>${(totalPrice * 0.1).toFixed(2)}</span>
+//                     </div>
+//                     <div className="flex justify-between font-bold text-lg border-t border-gray-200 pt-3">
+//                       <span>Total</span>
+//                       <span>${(totalPrice * 1.1).toFixed(2)}</span>
+//                     </div>
+//                   </div>
+//                 )}
+
+//                 <p className="text-center text-gray-600 text-sm mt-4">
+//                   You won't be charged yet
+//                 </p>
+//               </div>
+//             </form>
+
+//             {/* Extra Info */}
+//             <div className="mt-6 pt-6 border-t border-gray-200">
+//               <div className="flex items-center justify-between mb-2">
+//                 {/* <span className="text-gray-600">Free cancellation</span> */}
+//                 <span className="font-semibold">Before 24 hours</span>
+//               </div>
+//               <div className="flex items-center justify-between">
+//                 <span className="text-gray-600">Check-in time</span>
+//                 <span className="font-semibold">After 2:00 PM</span>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Payment Method Modal */}
+//       <PaymentMethodModal
+//         isOpen={showPaymentModal}
+//         onClose={() => setShowPaymentModal(false)}
+//         onSelectMethod={handlePaymentMethodSelect}
+//       />
+
+//       {/* Add custom animations to globals.css or use inline styles */}
+//       <style jsx>{`
+//         @keyframes fade-in {
+//           from { opacity: 0; transform: translateY(20px); }
+//           to { opacity: 1; transform: translateY(0); }
+//         }
+//         @keyframes bounce-subtle {
+//           0%, 100% { transform: translateY(0); }
+//           50% { transform: translateY(-5px); }
+//         }
+//         .animate-fade-in {
+//           animation: fade-in 0.3s ease-out;
+//         }
+//         .animate-bounce-subtle {
+//           animation: bounce-subtle 2s infinite;
+//         }
+//         .animate-bounce {
+//           animation: bounce 2s infinite;
+//         }
+//       `}</style>
+//     </div>
+//   );
+// }
 
 
 
