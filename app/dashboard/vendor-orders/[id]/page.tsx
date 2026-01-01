@@ -553,7 +553,7 @@ export default function VendorOrderDetailsPage() {
             </p>
             <div className="space-y-2 text-sm">
               <p className="text-gray-600">📞 +234-800-123-4567</p>
-              <p className="text-gray-600">✉️ support@holsapartments.com</p>
+              <p className="text-gray-600">✉️ admin@holsapartments.com</p>
               <p className="text-gray-600">🕒 Mon-Sun: 8:00 AM - 10:00 PM</p>
             </div>
           </div>
