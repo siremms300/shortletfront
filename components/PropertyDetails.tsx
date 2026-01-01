@@ -869,11 +869,13 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
                       <span>₦{totalPrices.accommodation.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between text-gray-700 text-sm">
-                      <span className="text-gray-600">• Utility ({priceBreakdown.utilityPercentage}%)</span>
+                      {/* <span className="text-gray-600">• Utility ({priceBreakdown.utilityPercentage}%)</span> */}
+                      <span className="text-gray-600">• Utility ({property.utilityPercentage}%)</span>
                       <span>₦{totalPrices.utility.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between text-gray-700 text-sm">
-                      <span className="text-gray-600">• Service Charge ({priceBreakdown.serviceChargePercentage}%)</span>
+                      {/* <span className="text-gray-600">• Service Charge ({priceBreakdown.serviceChargePercentage}%)</span> */}
+                      <span className="text-gray-600">• Service Charge ({property.serviceChargePercentage}%)</span>
                       <span>₦{totalPrices.serviceCharge.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between text-gray-700">
@@ -881,7 +883,8 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
                       <span>₦{(property.price * totalNights).toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between text-gray-700">
-                      <span>VAT ({priceBreakdown.vatPercentage}% on Accommodation)</span>
+                      {/* <span>VAT ({priceBreakdown.vatPercentage}% on Accommodation)</span> */}
+                      <span>VAT ({property.vatPercentage}% on Accommodation)</span>
                       <span>₦{totalPrices.vat.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between font-bold text-lg border-t border-gray-200 pt-3">
