@@ -491,7 +491,7 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
       }
 
       if (!bookingId) {
-        throw new Error('Booking created but no booking ID received');
+        throw new Error('Booking is created but no booking ID received');
       }
 
       console.log('Booking ID:', bookingId);
@@ -548,7 +548,7 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
     today.setDate(today.getDate() + 1); // Minimum check-in is tomorrow
     return today.toISOString().split('T')[0];
   };
-
+ 
   const getMinCheckoutDate = () => {
     if (!checkIn) return getMinDate();
     const checkInDate = new Date(checkIn);
