@@ -2916,7 +2916,7 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
 //                     'Reserve Now'
 //                   )}
 //                 </button>
-
+ 
 //                 {/* Price Breakdown */}
 //                 {totalNights > 0 && totalPrices && (
 //                   <div className="border-t border-gray-200 pt-4 space-y-3">
