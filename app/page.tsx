@@ -60,29 +60,29 @@ export default function Home() {
       id: 2, 
       src: '/images/hero2.jpg', 
       alt: 'Beautiful bedroom', 
-      caption: 'Cozy Bedroom',
-      category: 'Bedrooms'
+      caption: 'Comfortable Living Room',
+      category: 'Livingroom'
     },
     { 
       id: 3, 
       src: '/images/hero3.jpg', 
       alt: 'Stylish kitchen', 
-      caption: 'Modern Kitchen',
-      category: 'Kitchens'
+      caption: 'Modern Dinning Area',
+      category: 'Dinning'
     },
     { 
       id: 4, 
       src: '/images/hero4.jpg', 
       alt: 'Elegant bathroom', 
-      caption: 'Luxury Bathroom',
-      category: 'Bathrooms'
+      caption: 'Luxury Bedroom',
+      category: 'Bedroom'
     },
     { 
       id: 5, 
       src: '/images/hero5.jpg', 
       alt: 'Cozy studio', 
-      caption: 'Studio Apartment',
-      category: 'Living Spaces'
+      caption: 'Beautiful Compound',
+      category: 'Compound'
     },
     { 
       id: 6, 
@@ -95,15 +95,15 @@ export default function Home() {
       id: 7, 
       src: '/images/hero2.jpg', 
       alt: 'Master bedroom', 
-      caption: 'Master Bedroom',
+      caption: 'Luxury Living Room',
       category: 'Bedrooms'
     },
     { 
       id: 8, 
       src: '/images/hero3.jpg', 
       alt: 'Gourmet kitchen', 
-      caption: 'Gourmet Kitchen',
-      category: 'Kitchens'
+      caption: 'Exquisuite Dinning Area',
+      category: 'Dinning'
     }
   ];
 
