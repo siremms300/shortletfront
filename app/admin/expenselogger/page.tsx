@@ -441,41 +441,100 @@ export default function ExpenseLogger() {
   };
 
   // Add budget function
-  const addBudget = async () => {
-    try {
-      if (!newBudget.category || !newBudget.allocated || !newBudget.period || !newBudget.fiscalYear) {
-        alert('Please fill in all required fields');
-        return;
-      }
+  // const addBudget = async () => {
+  //   try {
+  //     if (!newBudget.category || !newBudget.allocated || !newBudget.period || !newBudget.fiscalYear) {
+  //       alert('Please fill in all required fields');
+  //       return;
+  //     }
 
-      const budgetData = {
-        category: newBudget.category,
-        allocated: newBudget.allocated,
-        period: newBudget.period,
-        fiscalYear: newBudget.fiscalYear,
-        notes: newBudget.notes || undefined
-      };
+  //     const budgetData = {
+  //       category: newBudget.category,
+  //       allocated: newBudget.allocated,
+  //       period: newBudget.period,
+  //       fiscalYear: newBudget.fiscalYear,
+  //       notes: newBudget.notes || undefined
+  //     };
 
-      const response = await expenseAPI.createBudget(budgetData);
+  //     const response = await expenseAPI.createBudget(budgetData);
       
-      if (response && response.budget) {
-        setBudgets([...budgets, response.budget]);
-        setShowBudgetModal(false);
-        setNewBudget({
-          category: '',
-          allocated: 0,
-          period: 'monthly',
-          fiscalYear: new Date().getFullYear(),
-          notes: ''
-        });
-        alert('Budget created successfully!');
-      }
+  //     if (response && response.budget) {
+  //       setBudgets([...budgets, response.budget]);
+  //       setShowBudgetModal(false);
+  //       setNewBudget({
+  //         category: '',
+  //         allocated: 0,
+  //         period: 'monthly',
+  //         fiscalYear: new Date().getFullYear(),
+  //         notes: ''
+  //       });
+  //       alert('Budget created successfully!');
+  //     }
 
-    } catch (error: any) {
-      console.error('Add budget error:', error);
-      alert(error.response?.data?.message || 'Failed to create budget');
+  //   } catch (error: any) {
+  //     console.error('Add budget error:', error);
+  //     alert(error.response?.data?.message || 'Failed to create budget');
+  //   }
+  // };
+
+
+// Add budget function
+const addBudget = async () => {
+  try {
+    if (!newBudget.category || !newBudget.allocated || !newBudget.period || !newBudget.fiscalYear) {
+      alert('Please fill in all required fields');
+      return;
     }
-  };
+
+    const budgetData = {
+      category: newBudget.category.trim(),
+      allocated: Number(newBudget.allocated),
+      period: newBudget.period,
+      fiscalYear: Number(newBudget.fiscalYear),
+      notes: newBudget.notes?.trim() || undefined
+    };
+
+    console.log('Sending budget data:', budgetData);
+
+    const response = await expenseAPI.createBudget(budgetData);
+    
+    if (response && response.budget) {
+      setBudgets([...budgets, response.budget]);
+      setShowBudgetModal(false);
+      setNewBudget({
+        category: '',
+        allocated: 0,
+        period: 'monthly',
+        fiscalYear: new Date().getFullYear(),
+        notes: ''
+      });
+      alert('Budget created successfully!');
+    }
+
+  } catch (error: any) {
+    console.error('Add budget error:', error);
+    
+    // Show more detailed error message
+    const errorMessage = error.response?.data?.message || 
+                        error.response?.data?.error || 
+                        error.message || 
+                        'Failed to create budget';
+    
+    // Show validation errors if any
+    if (error.response?.data?.errors) {
+      const validationErrors = error.response.data.errors.map((e: any) => 
+        `${e.field}: ${e.message}`
+      ).join('\n');
+      alert(`Validation failed:\n${validationErrors}`);
+    } else {
+      alert(errorMessage);
+    }
+  }
+};
+
+
+
+
 
   // Add vendor function
   const addVendor = async () => {
