@@ -1,3 +1,4 @@
+// app/admin/users/page.tsx
 import UsersTable from '@/components/admin/UsersTable';
 
 export default function UsersPage() {

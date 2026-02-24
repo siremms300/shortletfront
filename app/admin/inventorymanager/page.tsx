@@ -101,36 +101,146 @@ export default function InventoryManager() {
     fetchData();
   }, []);
 
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      setError('');
+
+
+  // Add this near the other useEffects
+  useEffect(() => {
+    console.log('Inventory state updated:', inventory);
+    console.log('Stats state updated:', stats);
+  }, [inventory, stats]);
+
+  // const fetchData = async () => {
+  //   try {
+  //     setLoading(true);
+  //     setError('');
       
-      const [itemsResponse, statsResponse] = await Promise.all([
-        inventoryAPI.getItems(),
-        inventoryAPI.getStats()
-      ]);
+  //     const [itemsResponse, statsResponse] = await Promise.all([
+  //       inventoryAPI.getItems(),
+  //       inventoryAPI.getStats()
+  //     ]);
       
-      setInventory(itemsResponse.items || []);
-      setStats(statsResponse.stats);
-    } catch (error: any) {
-      console.error('Failed to fetch inventory data:', error);
-      setError(error.response?.data?.message || 'Failed to load inventory data');
-    } finally {
-      setLoading(false);
+  //     setInventory(itemsResponse.items || []);
+  //     setStats(statsResponse.stats);
+  //   } catch (error: any) {
+  //     console.error('Failed to fetch inventory data:', error);
+  //     setError(error.response?.data?.message || 'Failed to load inventory data');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+
+const fetchData = async () => {
+  try {
+    setLoading(true);
+    setError('');
+    
+    console.log('Fetching inventory data...');
+    
+    const [itemsResponse, statsResponse] = await Promise.all([
+      inventoryAPI.getItems({ limit: 100 }),
+      inventoryAPI.getStats()
+    ]);
+    
+    console.log('Items response:', itemsResponse);
+    console.log('Stats response:', statsResponse);
+    
+    // Handle items response
+    if (itemsResponse && itemsResponse.items) {
+      setInventory(itemsResponse.items);
+      console.log(`Loaded ${itemsResponse.items.length} inventory items`);
+    } else if (Array.isArray(itemsResponse)) {
+      setInventory(itemsResponse);
+      console.log(`Loaded ${itemsResponse.length} inventory items (array format)`);
+    } else {
+      console.warn('Unexpected items response format:', itemsResponse);
+      setInventory([]);
     }
-  };
+    
+    // Handle stats response
+    if (statsResponse && statsResponse.stats) {
+      setStats(statsResponse.stats);
+      console.log('Stats loaded:', statsResponse.stats);
+    } else {
+      console.warn('Unexpected stats response format:', statsResponse);
+      setStats(null);
+    }
+    
+  } catch (error: any) {
+    console.error('Failed to fetch inventory data:', error);
+    setError(error.response?.data?.message || 'Failed to load inventory data');
+  } finally {
+    setLoading(false);
+  }
+};
 
-  const handleAddItem = async () => {
-    try {
-      if (!newItem.name || !newItem.unit || !newItem.location) {
-        setError('Name, unit, and location are required');
-        return;
-      }
 
-      const response = await inventoryAPI.createItem(newItem);
+
+
+
+  // const handleAddItem = async () => {
+  //   try {
+  //     if (!newItem.name || !newItem.unit || !newItem.location) {
+  //       setError('Name, unit, and location are required');
+  //       return;
+  //     }
+
+  //     const response = await inventoryAPI.createItem(newItem);
       
+  //     setInventory(prev => [response.item, ...prev]);
+  //     setShowAddSidebar(false);
+  //     setNewItem({
+  //       name: '',
+  //       category: 'linen',
+  //       description: '',
+  //       currentStock: 0,
+  //       minStock: 0,
+  //       reorderLevel: 0,
+  //       unit: '',
+  //       location: '',
+  //       supplier: '',
+  //       cost: 0,
+  //       barcode: '',
+  //       notes: ''
+  //     });
+      
+  //     await fetchData(); // Refresh stats
+  //     alert('Item added successfully!');
+  //   } catch (error: any) {
+  //     console.error('Failed to add item:', error);
+  //     setError(error.response?.data?.message || 'Failed to add item');
+  //   }
+  // };
+
+
+
+const handleAddItem = async () => {
+  try {
+    // Validate required fields
+    if (!newItem.name || !newItem.unit || !newItem.location) {
+      alert('Name, unit, and location are required');
+      return;
+    }
+
+    // Ensure numeric fields are properly parsed
+    const itemData = {
+      ...newItem,
+      currentStock: Number(newItem.currentStock) || 0,
+      minStock: Number(newItem.minStock) || 0,
+      reorderLevel: Number(newItem.reorderLevel) || 0,
+      cost: Number(newItem.cost) || 0
+    };
+
+    console.log('Creating inventory item:', itemData);
+
+    const response = await inventoryAPI.createItem(itemData);
+    console.log('Create item response:', response);
+    
+    if (response && response.item) {
+      // Add new item to inventory list
       setInventory(prev => [response.item, ...prev]);
+      
+      // Close sidebar and reset form
       setShowAddSidebar(false);
       setNewItem({
         name: '',
@@ -147,49 +257,158 @@ export default function InventoryManager() {
         notes: ''
       });
       
-      await fetchData(); // Refresh stats
+      // Refresh stats
+      await fetchData();
+      
       alert('Item added successfully!');
-    } catch (error: any) {
-      console.error('Failed to add item:', error);
-      setError(error.response?.data?.message || 'Failed to add item');
+    } else {
+      alert('Item created but response format unexpected. Refreshing data...');
+      await fetchData();
     }
-  };
+    
+  } catch (error: any) {
+    console.error('Failed to add item:', error);
+    alert(error.response?.data?.message || 'Failed to add item');
+  }
+};
 
-  const updateStock = async (item: InventoryItem, type: 'in' | 'out' | 'adjustment', quantity: number, reason: string) => {
-    try {
-      if (!quantity || !reason) {
-        setError('Quantity and reason are required');
-        return;
-      }
 
-      if (type === 'out' && quantity > item.currentStock) {
-        setError('Insufficient stock for this transaction');
-        return;
-      }
 
-      await inventoryAPI.updateStock(item._id, { type, quantity, reason });
-      await fetchData(); // Refresh data
-      setShowStockModal(false);
-      setStockUpdate({ type: 'in', quantity: 0, reason: '' });
+
+
+  // const updateStock = async (item: InventoryItem, type: 'in' | 'out' | 'adjustment', quantity: number, reason: string) => {
+  //   try {
+  //     if (!quantity || !reason) {
+  //       setError('Quantity and reason are required');
+  //       return;
+  //     }
+
+  //     if (type === 'out' && quantity > item.currentStock) {
+  //       setError('Insufficient stock for this transaction');
+  //       return;
+  //     }
+
+  //     await inventoryAPI.updateStock(item._id, { type, quantity, reason });
+  //     await fetchData(); // Refresh data
+  //     setShowStockModal(false);
+  //     setStockUpdate({ type: 'in', quantity: 0, reason: '' });
+  //     alert('Stock updated successfully!');
+  //   } catch (error: any) {
+  //     console.error('Failed to update stock:', error);
+  //     setError(error.response?.data?.message || 'Failed to update stock');
+  //   }
+  // };
+
+
+
+
+
+const updateStock = async (item: InventoryItem, type: 'in' | 'out' | 'adjustment', quantity: number, reason: string) => {
+  try {
+    console.log('Updating stock for item:', item.name);
+    console.log('Update details:', { type, quantity, reason });
+    
+    // Validate inputs
+    if (!quantity || quantity <= 0) {
+      alert('Quantity must be greater than 0');
+      return;
+    }
+
+    if (!reason || reason.trim() === '') {
+      alert('Reason is required');
+      return;
+    }
+
+    if (type === 'out' && quantity > item.currentStock) {
+      alert(`Insufficient stock. Current stock: ${item.currentStock} ${item.unit}`);
+      return;
+    }
+
+    // Call API to update stock
+    const response = await inventoryAPI.updateStock(item._id, { 
+      type, 
+      quantity, 
+      reason 
+    });
+
+    console.log('Stock update response:', response);
+
+    if (response && response.item) {
+      // Update the local state with the new item data
+      setInventory(prevInventory => 
+        prevInventory.map(invItem => 
+          invItem._id === item._id ? response.item : invItem
+        )
+      );
+      
+      // Refresh stats
+      await fetchData();
+      
       alert('Stock updated successfully!');
-    } catch (error: any) {
-      console.error('Failed to update stock:', error);
-      setError(error.response?.data?.message || 'Failed to update stock');
+    } else {
+      alert('Stock updated but response format unexpected. Refreshing data...');
+      await fetchData();
     }
-  };
+    
+    // Close modal and reset form
+    setShowStockModal(false);
+    setStockUpdate({ type: 'in', quantity: 0, reason: '' });
+    
+  } catch (error: any) {
+    console.error('Failed to update stock:', error);
+    
+    // Show specific error message
+    const errorMessage = error.response?.data?.message || 
+                        error.response?.data?.error || 
+                        error.message || 
+                        'Failed to update stock';
+    
+    alert(`Error: ${errorMessage}`);
+  }
+};
 
-  const deleteItem = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this inventory item?')) return;
 
-    try {
-      await inventoryAPI.deleteItem(id);
-      await fetchData(); // Refresh data
-      alert('Item deleted successfully!');
-    } catch (error: any) {
-      console.error('Failed to delete item:', error);
-      alert(error.response?.data?.message || 'Failed to delete item');
-    }
-  };
+
+
+
+
+  // const deleteItem = async (id: string) => {
+  //   if (!confirm('Are you sure you want to delete this inventory item?')) return;
+
+  //   try {
+  //     await inventoryAPI.deleteItem(id);
+  //     await fetchData(); // Refresh data
+  //     alert('Item deleted successfully!');
+  //   } catch (error: any) {
+  //     console.error('Failed to delete item:', error);
+  //     alert(error.response?.data?.message || 'Failed to delete item');
+  //   }
+  // };
+
+
+const deleteItem = async (id: string) => {
+  if (!confirm('Are you sure you want to delete this inventory item? This action cannot be undone.')) {
+    return;
+  }
+
+  try {
+    await inventoryAPI.deleteItem(id);
+    
+    // Remove item from local state
+    setInventory(prev => prev.filter(item => item._id !== id));
+    
+    // Refresh stats
+    await fetchData();
+    
+    alert('Item deleted successfully!');
+  } catch (error: any) {
+    console.error('Failed to delete item:', error);
+    alert(error.response?.data?.message || 'Failed to delete item');
+  }
+};
+
+
+
 
   const loadStockMovements = async (item: InventoryItem) => {
     try {
@@ -213,9 +432,20 @@ export default function InventoryManager() {
     }
   };
 
-  const getStockValue = (item: InventoryItem) => {
-    return item.currentStock * item.cost;
-  };
+  // const getStockValue = (item: InventoryItem) => {
+  //   return item.currentStock * item.cost;
+  // };
+
+
+
+
+const getStockValue = (item: InventoryItem) => {
+  return (item.currentStock || 0) * (item.cost || 0);
+};
+
+
+
+
 
   // Filter inventory
   const filteredInventory = inventory
@@ -295,7 +525,7 @@ export default function InventoryManager() {
               <div className="text-gray-600">Low Stock</div>
             </div>
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-              <div className="text-2xl font-bold text-purple-600">${stats.totalValue.toFixed(2)}</div>
+              <div className="text-2xl font-bold text-purple-600">₦{stats.totalValue.toFixed(2)}</div>
               <div className="text-gray-600">Total Value</div>
             </div>
           </div>
@@ -432,7 +662,7 @@ export default function InventoryManager() {
                           Min: {item.minStock} | Reorder: {item.reorderLevel}
                         </div>
                         <div className="text-xs text-gray-500">
-                          Cost: ${item.cost}/{item.unit}
+                          Cost: ₦{item.cost}/{item.unit}
                         </div>
                       </div>
                     </td>
@@ -442,7 +672,7 @@ export default function InventoryManager() {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      ${getStockValue(item).toFixed(2)}
+                      ₦{getStockValue(item).toFixed(2)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {new Date(item.updatedAt).toLocaleDateString()}
@@ -612,7 +842,7 @@ export default function InventoryManager() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Cost per Unit ($)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Cost per Unit (₦)</label>
                   <input
                     type="number"
                     step="0.01"
@@ -786,6 +1016,63 @@ export default function InventoryManager() {
                   </p>
                 </div>
               )}
+
+
+
+
+              {/* {stockMovements.length > 0 ? (
+                <div className="space-y-3">
+                  {stockMovements.map((movement) => (
+                    <div key={movement._id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                      <div className="flex items-center space-x-4">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                          movement.type === 'in' ? 'bg-green-100 text-green-600' :
+                          movement.type === 'out' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'
+                        }`}>
+                          {movement.type === 'in' ? '⬆️' : movement.type === 'out' ? '⬇️' : '🔄'}
+                        </div>
+                        <div>
+                          <div className="font-medium text-gray-900">{movement.reason}</div>
+                          <div className="text-sm text-gray-500">
+                            {movement.type === 'in' ? 'Added' : movement.type === 'out' ? 'Removed' : 'Adjusted'}: 
+                            {movement.type === 'in' ? '+' : movement.type === 'out' ? '-' : ' '}
+                            {movement.quantity} {selectedItem.unit}
+                          </div>
+                          <div className="text-xs text-gray-400">
+                            Stock changed: {movement.previousStock} → {movement.newStock}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm text-gray-900">
+                          {new Date(movement.createdAt).toLocaleDateString()}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {new Date(movement.createdAt).toLocaleTimeString()}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          by {movement.performedBy?.firstName} {movement.performedBy?.lastName}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <h3 className="mt-2 text-sm font-medium text-gray-900">No stock movements</h3>
+                  <p className="mt-1 text-sm text-gray-500">
+                    No stock transactions recorded for this item yet.
+                  </p>
+                </div>
+              )} */}
+
+
+
+
+
             </div>
           </div>
         </div>

@@ -75,113 +75,7 @@ export default function AmenitiesPage() {
     setEditingAmenity(null);
   };
 
-  // Create or update amenity
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   try {
-  //     setError('');
-
-  //     if (editingAmenity) {
-  //       // Update existing amenity
-  //       await amenitiesAPI.updateAmenity(editingAmenity._id, formData);
-  //     } else {
-  //       // Create new amenity
-  //       await amenitiesAPI.createAmenity(formData);
-  //     }
-
-  //     // Refresh amenities and close modal
-  //     await fetchAmenities();
-  //     setShowAddModal(false);
-  //     resetForm();
-  //   } catch (err: any) {
-  //     console.error('Error saving amenity:', err);
-  //     setError(err.response?.data?.message || 'Failed to save amenity');
-  //   }
-  // };
-
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   try {
-  //     setError('');
-
-  //     // Prepare the data
-  //     const submitData = {
-  //       name: formData.name.trim(),
-  //       description: formData.description.trim() || undefined,
-  //       icon: formData.icon.trim() || undefined,
-  //       category: formData.category
-  //     };
-
-  //     console.log('Submitting amenity data:', submitData);
-
-  //     if (editingAmenity) {
-  //       await amenitiesAPI.updateAmenity(editingAmenity._id, submitData);
-  //     } else {
-  //       await amenitiesAPI.createAmenity(submitData);
-  //     }
-
-  //     await fetchAmenities();
-  //     setShowAddModal(false);
-  //     resetForm();
-  //   } catch (err: any) {
-  //     console.error('Full error object:', err);
-  //     console.error('Error response data:', err.response?.data);
-  //     console.error('Error response status:', err.response?.status);
-      
-  //     // Get the actual error message from the backend
-  //     const errorMessage = err.response?.data?.message || 
-  //                         err.response?.data?.error || 
-  //                         'Failed to save amenity';
-      
-  //     setError(errorMessage);
-  //   }
-  // };
-
-  // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
   
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   try {
-  //     setError('');
-
-  //     // Validate required fields
-  //     if (!formData.name.trim()) {
-  //       setError('Amenity name is required');
-  //       return;
-  //     }
-
-  //     // Prepare amenity data (NO images needed for amenities!)
-  //     const amenityData = {
-  //       name: formData.name.trim(),
-  //       description: formData.description.trim() || undefined,
-  //       icon: formData.icon.trim() || undefined,
-  //       category: formData.category
-  //     };
-
-  //     console.log('Creating amenity with data:', amenityData);
-
-  //     if (editingAmenity) {
-  //       // Update existing amenity
-  //       await amenitiesAPI.updateAmenity(editingAmenity._id, amenityData);
-  //     } else {
-  //       // Create new amenity - this should NOT require images!
-  //       await amenitiesAPI.createAmenity(amenityData);
-  //     }
-
-  //     // Refresh amenities and close modal
-  //     await fetchAmenities();
-  //     setShowAddModal(false);
-  //     resetForm();
-      
-  //   } catch (err: any) {
-  //     console.error('Error saving amenity:', err);
-  //     console.error('Error response:', err.response?.data);
-      
-  //     const errorMessage = err.response?.data?.message || 'Failed to save amenity';
-  //     setError(errorMessage);
-  //   }
-  // };
-
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
   try {
@@ -292,19 +186,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   return (
     <div className="space-y-8">
       {/* Header */}
-      {/* <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-[#383a3c]">Amenities</h1>
-          <p className="text-gray-600 mt-2">Manage property amenities</p>
-        </div>
-        <button 
-          onClick={() => setShowAddModal(true)}
-          className="bg-[#f06123] text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-600 transition duration-200"
-        >
-          Add Amenity
-        </button>
-      </div> */}
-
+      
       {/* // In the header section of AmenitiesPage, add this button next to "Add Amenity" */}
       <div className="flex justify-between items-center">
         <div>

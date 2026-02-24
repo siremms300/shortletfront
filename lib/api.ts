@@ -1895,50 +1895,167 @@ export const accessPassAPI = {
     }
   };
 
-  export const inventoryAPI = {
-    // Inventory items
-    getItems: async (params?: any) => {
+  // export const inventoryAPI = {
+  //   // Inventory items
+  //   getItems: async (params?: any) => {
+  //     const response = await api.get('/inventory/items', { params });
+  //     return response.data;
+  //   },
+
+  //   getItemById: async (id: string) => {
+  //     const response = await api.get(`/inventory/items/${id}`);
+  //     return response.data;
+  //   },
+
+  //   createItem: async (itemData: any) => {
+  //     const response = await api.post('/inventory/items', itemData);
+  //     return response.data;
+  //   },
+
+  //   updateItem: async (id: string, itemData: any) => {
+  //     const response = await api.put(`/inventory/items/${id}`, itemData);
+  //     return response.data;
+  //   },
+
+  //   deleteItem: async (id: string) => {
+  //     const response = await api.delete(`/inventory/items/${id}`);
+  //     return response.data;
+  //   },
+
+  //   // Stock management
+  //   updateStock: async (id: string, stockData: any) => {
+  //     const response = await api.patch(`/inventory/items/${id}/stock`, stockData);
+  //     return response.data;
+  //   },
+
+  //   getStockMovements: async (id: string) => {
+  //     const response = await api.get(`/inventory/items/${id}/movements`);
+  //     return response.data;
+  //   },
+
+  //   // Statistics
+  //   getStats: async () => {
+  //     const response = await api.get('/inventory/stats');
+  //     return response.data;
+  //   }
+  // };
+
+
+
+export const inventoryAPI = {
+  // Get all inventory items
+  getItems: async (params?: any) => {
+    try {
       const response = await api.get('/inventory/items', { params });
       return response.data;
-    },
+    } catch (error: any) {
+      console.error('Get inventory items error:', error);
+      throw error;
+    }
+  },
 
-    getItemById: async (id: string) => {
+  // Get inventory item by ID
+  getItemById: async (id: string) => {
+    try {
       const response = await api.get(`/inventory/items/${id}`);
       return response.data;
-    },
+    } catch (error: any) {
+      console.error('Get inventory item error:', error);
+      throw error;
+    }
+  },
 
-    createItem: async (itemData: any) => {
-      const response = await api.post('/inventory/items', itemData);
+  // Create new inventory item
+  createItem: async (itemData: any) => {
+    try {
+      // Ensure numbers are properly parsed
+      const processedData = {
+        ...itemData,
+        currentStock: Number(itemData.currentStock) || 0,
+        minStock: Number(itemData.minStock) || 0,
+        reorderLevel: Number(itemData.reorderLevel) || 0,
+        cost: Number(itemData.cost) || 0
+      };
+      
+      const response = await api.post('/inventory/items', processedData);
       return response.data;
-    },
+    } catch (error: any) {
+      console.error('Create inventory item error:', error);
+      throw error;
+    }
+  },
 
-    updateItem: async (id: string, itemData: any) => {
+  // Update inventory item
+  updateItem: async (id: string, itemData: any) => {
+    try {
       const response = await api.put(`/inventory/items/${id}`, itemData);
       return response.data;
-    },
+    } catch (error: any) {
+      console.error('Update inventory item error:', error);
+      throw error;
+    }
+  },
 
-    deleteItem: async (id: string) => {
+  // Delete inventory item
+  deleteItem: async (id: string) => {
+    try {
       const response = await api.delete(`/inventory/items/${id}`);
       return response.data;
-    },
+    } catch (error: any) {
+      console.error('Delete inventory item error:', error);
+      throw error;
+    }
+  },
 
-    // Stock management
-    updateStock: async (id: string, stockData: any) => {
-      const response = await api.patch(`/inventory/items/${id}/stock`, stockData);
+  // Update stock level
+  updateStock: async (id: string, stockData: any) => {
+    try {
+      console.log('Updating stock with data:', { id, stockData });
+      
+      // Ensure quantity is a positive number
+      const processedData = {
+        type: stockData.type,
+        quantity: Number(stockData.quantity) || 0,
+        reason: stockData.reason || 'Stock adjustment'
+      };
+      
+      const response = await api.patch(`/inventory/items/${id}/stock`, processedData);
+      console.log('Update stock response:', response.data);
       return response.data;
-    },
+    } catch (error: any) {
+      console.error('Update stock error:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
+      throw error;
+    }
+  },
 
-    getStockMovements: async (id: string) => {
+  // Get stock movements
+  getStockMovements: async (id: string) => {
+    try {
       const response = await api.get(`/inventory/items/${id}/movements`);
       return response.data;
-    },
+    } catch (error: any) {
+      console.error('Get stock movements error:', error);
+      throw error;
+    }
+  },
 
-    // Statistics
-    getStats: async () => {
+  // Get inventory statistics
+  getStats: async () => {
+    try {
       const response = await api.get('/inventory/stats');
       return response.data;
+    } catch (error: any) {
+      console.error('Get inventory stats error:', error);
+      throw error;
     }
-  };
+  }
+};
+
+
 
   export const maintenanceAPI = {
     // Maintenance issues
@@ -2011,76 +2128,640 @@ export const accessPassAPI = {
   };
 
   // Staff API
+// export const staffAPI = {
+//   // Staff management
+//   getStaff: async (params?: any) => {
+//     const response = await api.get('/staff/staff', { params });
+//     return response.data;
+//   },
+
+//   getStaffStats: async () => {
+//     const response = await api.get('/staff/staff/stats');
+//     return response.data;
+//   },
+
+//   createStaff: async (staffData: any) => {
+//     const response = await api.post('/staff/staff', staffData);
+//     return response.data;
+//   },
+
+//   updateStaff: async (id: string, staffData: any) => {
+//     const response = await api.put(`/staff/staff/${id}`, staffData);
+//     return response.data;
+//   },
+
+//   deleteStaff: async (id: string) => {
+//     const response = await api.delete(`/staff/staff/${id}`);
+//     return response.data;
+//   },
+
+//   // Attendance
+//   getAttendance: async (params?: any) => {
+//     const response = await api.get('/staff/attendance', { params });
+//     return response.data;
+//   },
+
+//   checkIn: async (checkInData: any) => {
+//     const response = await api.post('/staff/attendance/checkin', checkInData);
+//     return response.data;
+//   },
+
+//   checkOut: async (checkOutData: any) => {
+//     const response = await api.post('/staff/attendance/checkout', checkOutData);
+//     return response.data;
+//   },
+
+//   // Daily reports
+//   getReports: async (params?: any) => {
+//     const response = await api.get('/staff/reports', { params });
+//     return response.data;
+//   },
+
+//   createReport: async (reportData: any) => {
+//     const response = await api.post('/staff/reports', reportData);
+//     return response.data;
+//   },
+
+//   // Leave requests
+//   getLeaveRequests: async (params?: any) => {
+//     const response = await api.get('/staff/leaves', { params });
+//     return response.data;
+//   },
+
+//   createLeaveRequest: async (leaveData: any) => {
+//     const response = await api.post('/staff/leaves', leaveData);
+//     return response.data;
+//   },
+
+//   updateLeaveStatus: async (id: string, statusData: any) => {
+//     const response = await api.patch(`/staff/leaves/${id}/status`, statusData);
+//     return response.data;
+//   }
+// }
+
+
 export const staffAPI = {
   // Staff management
   getStaff: async (params?: any) => {
-    const response = await api.get('/staff/staff', { params });
-    return response.data;
+    try {
+      const response = await api.get('/staff/staff', { params });
+      return response.data;
+    } catch (error: any) {
+      console.error('Get staff error:', error);
+      throw error;
+    }
+  },
+
+  getStaffById: async (id: string) => {
+    try {
+      const response = await api.get(`/staff/staff/${id}`);
+      return response.data;
+    } catch (error: any) {
+      console.error('Get staff by ID error:', error);
+      throw error;
+    }
   },
 
   getStaffStats: async () => {
-    const response = await api.get('/staff/staff/stats');
-    return response.data;
+    try {
+      const response = await api.get('/staff/staff/stats');
+      return response.data;
+    } catch (error: any) {
+      console.error('Get staff stats error:', error);
+      throw error;
+    }
   },
 
   createStaff: async (staffData: any) => {
-    const response = await api.post('/staff/staff', staffData);
-    return response.data;
+    try {
+      const response = await api.post('/staff/staff', staffData);
+      return response.data;
+    } catch (error: any) {
+      console.error('Create staff error:', error);
+      throw error;
+    }
   },
 
   updateStaff: async (id: string, staffData: any) => {
-    const response = await api.put(`/staff/staff/${id}`, staffData);
-    return response.data;
+    try {
+      const response = await api.put(`/staff/staff/${id}`, staffData);
+      return response.data;
+    } catch (error: any) {
+      console.error('Update staff error:', error);
+      throw error;
+    }
   },
 
   deleteStaff: async (id: string) => {
-    const response = await api.delete(`/staff/staff/${id}`);
-    return response.data;
+    try {
+      const response = await api.delete(`/staff/staff/${id}`);
+      return response.data;
+    } catch (error: any) {
+      console.error('Delete staff error:', error);
+      throw error;
+    }
   },
 
   // Attendance
   getAttendance: async (params?: any) => {
-    const response = await api.get('/staff/attendance', { params });
-    return response.data;
+    try {
+      const response = await api.get('/staff/attendance', { params });
+      return response.data;
+    } catch (error: any) {
+      console.error('Get attendance error:', error);
+      throw error;
+    }
   },
 
   checkIn: async (checkInData: any) => {
-    const response = await api.post('/staff/attendance/checkin', checkInData);
-    return response.data;
+    try {
+      const response = await api.post('/staff/attendance/checkin', checkInData);
+      return response.data;
+    } catch (error: any) {
+      console.error('Check-in error:', error);
+      throw error;
+    }
   },
 
   checkOut: async (checkOutData: any) => {
-    const response = await api.post('/staff/attendance/checkout', checkOutData);
-    return response.data;
+    try {
+      const response = await api.post('/staff/attendance/checkout', checkOutData);
+      return response.data;
+    } catch (error: any) {
+      console.error('Check-out error:', error);
+      throw error;
+    }
+  },
+
+  updateAttendance: async (id: string, attendanceData: any) => {
+    try {
+      const response = await api.put(`/staff/attendance/${id}`, attendanceData);
+      return response.data;
+    } catch (error: any) {
+      console.error('Update attendance error:', error);
+      throw error;
+    }
+  },
+
+  deleteAttendance: async (id: string) => {
+    try {
+      const response = await api.delete(`/staff/attendance/${id}`);
+      return response.data;
+    } catch (error: any) {
+      console.error('Delete attendance error:', error);
+      throw error;
+    }
   },
 
   // Daily reports
   getReports: async (params?: any) => {
-    const response = await api.get('/staff/reports', { params });
-    return response.data;
+    try {
+      const response = await api.get('/staff/reports', { params });
+      return response.data;
+    } catch (error: any) {
+      console.error('Get reports error:', error);
+      throw error;
+    }
   },
 
   createReport: async (reportData: any) => {
-    const response = await api.post('/staff/reports', reportData);
-    return response.data;
+    try {
+      const response = await api.post('/staff/reports', reportData);
+      return response.data;
+    } catch (error: any) {
+      console.error('Create report error:', error);
+      throw error;
+    }
+  },
+
+  getReportById: async (id: string) => {
+    try {
+      const response = await api.get(`/staff/reports/${id}`);
+      return response.data;
+    } catch (error: any) {
+      console.error('Get report by ID error:', error);
+      throw error;
+    }
+  },
+
+  updateReport: async (id: string, reportData: any) => {
+    try {
+      const response = await api.put(`/staff/reports/${id}`, reportData);
+      return response.data;
+    } catch (error: any) {
+      console.error('Update report error:', error);
+      throw error;
+    }
+  },
+
+  deleteReport: async (id: string) => {
+    try {
+      const response = await api.delete(`/staff/reports/${id}`);
+      return response.data;
+    } catch (error: any) {
+      console.error('Delete report error:', error);
+      throw error;
+    }
   },
 
   // Leave requests
   getLeaveRequests: async (params?: any) => {
-    const response = await api.get('/staff/leaves', { params });
-    return response.data;
+    try {
+      const response = await api.get('/staff/leaves', { params });
+      return response.data;
+    } catch (error: any) {
+      console.error('Get leave requests error:', error);
+      throw error;
+    }
   },
 
   createLeaveRequest: async (leaveData: any) => {
-    const response = await api.post('/staff/leaves', leaveData);
-    return response.data;
+    try {
+      const response = await api.post('/staff/leaves', leaveData);
+      return response.data;
+    } catch (error: any) {
+      console.error('Create leave request error:', error);
+      throw error;
+    }
+  },
+
+  getLeaveRequestById: async (id: string) => {
+    try {
+      const response = await api.get(`/staff/leaves/${id}`);
+      return response.data;
+    } catch (error: any) {
+      console.error('Get leave request by ID error:', error);
+      throw error;
+    }
   },
 
   updateLeaveStatus: async (id: string, statusData: any) => {
-    const response = await api.patch(`/staff/leaves/${id}/status`, statusData);
-    return response.data;
+    try {
+      const response = await api.patch(`/staff/leaves/${id}/status`, statusData);
+      return response.data;
+    } catch (error: any) {
+      console.error('Update leave status error:', error);
+      throw error;
+    }
+  },
+
+  deleteLeaveRequest: async (id: string) => {
+    try {
+      const response = await api.delete(`/staff/leaves/${id}`);
+      return response.data;
+    } catch (error: any) {
+      console.error('Delete leave request error:', error);
+      throw error;
+    }
   }
-}
+};
+
+
+// Utility API calls
+export const utilityAPI = {
+  // Get all utility readings
+  getReadings: async (params?: any) => {
+    try {
+      const response = await api.get('/utility/readings', { params });
+      return response.data;
+    } catch (error: any) {
+      console.error('Get utility readings error:', error);
+      throw error;
+    }
+  },
+
+  // Create utility reading
+  createReading: async (readingData: any) => {
+    try {
+      const response = await api.post('/utility/readings', readingData);
+      return response.data;
+    } catch (error: any) {
+      console.error('Create utility reading error:', error);
+      throw error;
+    }
+  },
+
+  // Update utility reading
+  updateReading: async (id: string, readingData: any) => {
+    try {
+      const response = await api.put(`/utility/readings/${id}`, readingData);
+      return response.data;
+    } catch (error: any) {
+      console.error('Update utility reading error:', error);
+      throw error;
+    }
+  },
+
+  // Delete utility reading
+  deleteReading: async (id: string) => {
+    try {
+      const response = await api.delete(`/utility/readings/${id}`);
+      return response.data;
+    } catch (error: any) {
+      console.error('Delete utility reading error:', error);
+      throw error;
+    }
+  },
+
+  // Mark reading as billed
+  markAsBilled: async (id: string) => {
+    try {
+      const response = await api.patch(`/utility/readings/${id}/billed`);
+      return response.data;
+    } catch (error: any) {
+      console.error('Mark as billed error:', error);
+      throw error;
+    }
+  },
+
+  // Bulk upload readings
+  bulkUpload: async (readings: any[]) => {
+    try {
+      const response = await api.post('/utility/readings/bulk', { readings });
+      return response.data;
+    } catch (error: any) {
+      console.error('Bulk upload error:', error);
+      throw error;
+    }
+  },
+
+  // Get utility rates
+  getRates: async () => {
+    try {
+      const response = await api.get('/utility/rates');
+      return response.data;
+    } catch (error: any) {
+      console.error('Get utility rates error:', error);
+      throw error;
+    }
+  },
+
+  // Update utility rate
+  updateRate: async (type: string, rateData: any) => {
+    try {
+      const response = await api.put(`/utility/rates/${type}`, rateData);
+      return response.data;
+    } catch (error: any) {
+      console.error('Update utility rate error:', error);
+      throw error;
+    }
+  },
+
+  // Get utility alerts
+  getAlerts: async (params?: any) => {
+    try {
+      const response = await api.get('/utility/alerts', { params });
+      return response.data;
+    } catch (error: any) {
+      console.error('Get utility alerts error:', error);
+      throw error;
+    }
+  },
+
+  // Resolve alert
+  resolveAlert: async (id: string) => {
+    try {
+      const response = await api.patch(`/utility/alerts/${id}/resolve`);
+      return response.data;
+    } catch (error: any) {
+      console.error('Resolve alert error:', error);
+      throw error;
+    }
+  },
+
+  // Get utility statistics
+  getStats: async (params?: any) => {
+    try {
+      const response = await api.get('/utility/stats', { params });
+      return response.data;
+    } catch (error: any) {
+      console.error('Get utility stats error:', error);
+      throw error;
+    }
+  },
+
+  // Export readings
+  exportReadings: async (params?: any) => {
+    try {
+      const response = await api.get('/utility/readings/export', { 
+        params,
+        responseType: 'blob' 
+      });
+      return response.data;
+    } catch (error: any) {
+      console.error('Export readings error:', error);
+      throw error;
+    }
+  }
+};
+
+
+// Expense API calls
+export const expenseAPI = {
+  // ========== EXPENSES ==========
+  getExpenses: async (params?: any) => {
+    try {
+      const response = await api.get('/expenses', { params });
+      return response.data;
+    } catch (error: any) {
+      console.error('Get expenses error:', error);
+      throw error;
+    }
+  },
+
+  getExpenseById: async (id: string) => {
+    try {
+      const response = await api.get(`/expenses/${id}`);
+      return response.data;
+    } catch (error: any) {
+      console.error('Get expense error:', error);
+      throw error;
+    }
+  },
+
+  createExpense: async (expenseData: FormData) => {
+    try {
+      const response = await api.post('/expenses', expenseData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data;
+    } catch (error: any) {
+      console.error('Create expense error:', error);
+      throw error;
+    }
+  },
+
+  updateExpense: async (id: string, expenseData: FormData) => {
+    try {
+      const response = await api.put(`/expenses/${id}`, expenseData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data;
+    } catch (error: any) {
+      console.error('Update expense error:', error);
+      throw error;
+    }
+  },
+
+  deleteExpense: async (id: string) => {
+    try {
+      const response = await api.delete(`/expenses/${id}`);
+      return response.data;
+    } catch (error: any) {
+      console.error('Delete expense error:', error);
+      throw error;
+    }
+  },
+
+  updateExpenseStatus: async (id: string, statusData: any) => {
+    try {
+      const response = await api.patch(`/expenses/${id}/status`, statusData);
+      return response.data;
+    } catch (error: any) {
+      console.error('Update expense status error:', error);
+      throw error;
+    }
+  },
+
+  getExpenseStats: async (params?: any) => {
+    try {
+      const response = await api.get('/expenses/stats', { params });
+      return response.data;
+    } catch (error: any) {
+      console.error('Get expense stats error:', error);
+      throw error;
+    }
+  },
+
+  exportExpenses: async (params?: any) => {
+    try {
+      const response = await api.get('/expenses/export', {
+        params,
+        responseType: 'blob'
+      });
+      return response.data;
+    } catch (error: any) {
+      console.error('Export expenses error:', error);
+      throw error;
+    }
+  },
+
+  // ========== BUDGETS ==========
+  getBudgets: async (params?: any) => {
+    try {
+      const response = await api.get('/expenses/budgets', { params });
+      return response.data;
+    } catch (error: any) {
+      console.error('Get budgets error:', error);
+      throw error;
+    }
+  },
+
+  getBudgetById: async (id: string) => {
+    try {
+      const response = await api.get(`/expenses/budgets/${id}`);
+      return response.data;
+    } catch (error: any) {
+      console.error('Get budget error:', error);
+      throw error;
+    }
+  },
+
+  createBudget: async (budgetData: any) => {
+    try {
+      const response = await api.post('/expenses/budgets', budgetData);
+      return response.data;
+    } catch (error: any) {
+      console.error('Create budget error:', error);
+      throw error;
+    }
+  },
+
+  updateBudget: async (id: string, budgetData: any) => {
+    try {
+      const response = await api.put(`/expenses/budgets/${id}`, budgetData);
+      return response.data;
+    } catch (error: any) {
+      console.error('Update budget error:', error);
+      throw error;
+    }
+  },
+
+  deleteBudget: async (id: string) => {
+    try {
+      const response = await api.delete(`/expenses/budgets/${id}`);
+      return response.data;
+    } catch (error: any) {
+      console.error('Delete budget error:', error);
+      throw error;
+    }
+  },
+
+  // ========== VENDORS ==========
+  getVendors: async (params?: any) => {
+    try {
+      const response = await api.get('/expenses/vendors', { params });
+      return response.data;
+    } catch (error: any) {
+      console.error('Get vendors error:', error);
+      throw error;
+    }
+  },
+
+  getVendorById: async (id: string) => {
+    try {
+      const response = await api.get(`/expenses/vendors/${id}`);
+      return response.data;
+    } catch (error: any) {
+      console.error('Get vendor error:', error);
+      throw error;
+    }
+  },
+
+  createVendor: async (vendorData: any) => {
+    try {
+      const response = await api.post('/expenses/vendors', vendorData);
+      return response.data;
+    } catch (error: any) {
+      console.error('Create vendor error:', error);
+      throw error;
+    }
+  },
+
+  updateVendor: async (id: string, vendorData: any) => {
+    try {
+      const response = await api.put(`/expenses/vendors/${id}`, vendorData);
+      return response.data;
+    } catch (error: any) {
+      console.error('Update vendor error:', error);
+      throw error;
+    }
+  },
+
+  deleteVendor: async (id: string) => {
+    try {
+      const response = await api.delete(`/expenses/vendors/${id}`);
+      return response.data;
+    } catch (error: any) {
+      console.error('Delete vendor error:', error);
+      throw error;
+    }
+  },
+
+  // ========== RECURRING ==========
+  processRecurringExpenses: async () => {
+    try {
+      const response = await api.post('/expenses/recurring/process');
+      return response.data;
+    } catch (error: any) {
+      console.error('Process recurring expenses error:', error);
+      throw error;
+    }
+  }
+};
+
+
+
 export default api;
 
 

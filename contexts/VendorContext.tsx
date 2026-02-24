@@ -24,53 +24,6 @@ interface VendorProduct {
   tags: string[];
 }
 
-// interface VendorOrder {
-//   _id: string;
-//   orderNumber: string;
-//   user: {
-//     _id: string;
-//     firstName: string;
-//     lastName: string;
-//     email: string;
-//     phone?: string;
-//   };
-//   vendor: {
-//     _id: string;
-//     businessName: string;
-//     contactPerson: {
-//       name: string;
-//       email: string;
-//       phone: string;
-//     };
-//   };
-//   booking: {
-//     _id: string;
-//     property: string;
-//     checkIn: string;
-//     checkOut: string;
-//   };
-//   items: Array<{
-//     product: VendorProduct;
-//     quantity: number;
-//     price: number;
-//     specialInstructions?: string;
-//   }>;
-//   subtotal: number;
-//   serviceFee: number;
-//   deliveryFee: number;
-//   totalAmount: number;
-//   orderStatus: string;
-//   paymentStatus: string;
-//   deliveryAddress: {
-//     property: string;
-//     unit: string;
-//     specialInstructions: string;
-//   };
-//   preferredDeliveryTime?: string;
-//   estimatedDeliveryTime?: string;
-//   actualDeliveryTime?: string;
-//   createdAt: string;
-// }
 
 // Update the VendorOrder interface in contexts/VendorContext.tsx
 interface VendorOrder {
@@ -214,19 +167,7 @@ export const VendorProvider: React.FC<VendorProviderProps> = ({ children }) => {
     return cart.reduce((count, item) => count + item.quantity, 0);
   };
 
-  // Order management functions
-//   const createVendorOrder = async (orderData: any) => {
-//     try {
-//       setLoading(true);
-//       const response = await vendorAPI.createOrder(orderData);
-//       return response;
-//     } catch (error: any) {
-//       throw new Error(error.response?.data?.message || 'Failed to create order');
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
+ 
   // In your VendorContext.tsx - Fix createVendorOrder function
     const createVendorOrder = async (orderData: any) => {
     try {
@@ -266,74 +207,6 @@ export const VendorProvider: React.FC<VendorProviderProps> = ({ children }) => {
     }
   };
 
-//   const verifyVendorPayment = async (reference: string) => {
-//     try {
-//       const response = await vendorAPI.verifyVendorPayment(reference);
-//       return response;
-//     } catch (error: any) {
-//       throw new Error(error.response?.data?.message || 'Payment verification failed');
-//     }
-//   };
- 
-
-
-
-// In your VendorContext.tsx - Updated verifyVendorPayment function
-    // const verifyVendorPayment = async (reference: string) => {
-    // try {
-    //     console.log('Verifying vendor payment with reference:', reference);
-    //     const response = await vendorAPI.verifyVendorPayment(reference);
-        
-    //     if (!response.success) {
-    //     throw new Error(response.message || 'Payment verification failed');
-    //     }
-        
-    //     return response;
-    // } catch (error: any) {
-    //     console.error('Vendor payment verification error:', error);
-        
-    //     // Handle 404 specifically
-    //     if (error.response?.status === 404) {
-    //     throw new Error('Vendor payment verification endpoint not found. Please contact support.');
-    //     }
-        
-    //     // Handle other errors
-    //     if (error.response?.data?.message) {
-    //     throw new Error(error.response.data.message);
-    //     }
-        
-    //     throw new Error(error.message || 'Payment verification failed');
-    // }
-    // };
-
-    // In your VendorContext.tsx - Updated verifyVendorPayment function
-    // const verifyVendorPayment = async (reference: string) => {
-    // try {
-    //     console.log('Verifying vendor payment with reference:', reference);
-    //     const response = await vendorAPI.verifyVendorPayment(reference);
-        
-    //     if (!response.success) {
-    //     throw new Error(response.message || 'Payment verification failed');
-    //     }
-        
-    //     return response;
-    // } catch (error: any) {
-    //     console.error('Vendor payment verification error:', error);
-        
-    //     // Handle 404 specifically
-    //     if (error.response?.status === 404) {
-    //     throw new Error('Vendor payment verification endpoint not found. Please contact support.');
-    //     }
-        
-    //     // Handle other errors
-    //     if (error.response?.data?.message) {
-    //     throw new Error(error.response.data.message);
-    //     }
-        
-    //     throw new Error(error.message || 'Payment verification failed');
-    // }
-    // };
-
     // In your VendorContext.tsx - FIXED verifyVendorPayment function
     const verifyVendorPayment = async (reference: string) => {
     try {
@@ -367,18 +240,6 @@ export const VendorProvider: React.FC<VendorProviderProps> = ({ children }) => {
         throw new Error(error.message || 'Payment verification failed');
     }
     };
-
-//   const getUserVendorOrders = async () => {
-//     try {
-//       setLoading(true);
-//       const response = await vendorAPI.getUserVendorOrders();
-//       setVendorOrders(response.orders || []);
-//     } catch (error: any) {
-//       throw new Error(error.response?.data?.message || 'Failed to fetch orders');
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
 
   // In your VendorContext.tsx - Update getUserVendorOrders function
     const getUserVendorOrders = async () => {

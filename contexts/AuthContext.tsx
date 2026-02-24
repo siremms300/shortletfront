@@ -4,16 +4,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { authAPI } from '@/lib/api';
 import { useRouter } from 'next/navigation';
-
-// interface User {
-//   _id: string;
-//   firstName: string;
-//   lastName: string;
-//   email: string;
-//   role: string;
-//   profileImagePath?: string;
-//   isVerified: boolean;
-// }
+ 
 
 interface User {
   _id: string;
