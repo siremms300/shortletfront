@@ -224,68 +224,166 @@ export default function ExpenseLogger() {
     fetchData();
   }, [filters, dateRange]);
 
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      setError('');
+  // const fetchData = async () => {
+  //   try {
+  //     setLoading(true);
+  //     setError('');
       
-      console.log('Fetching expense data...');
+  //     console.log('Fetching expense data...');
 
-      // Fetch properties - ensure we're getting them correctly
+  //     // Fetch properties - ensure we're getting them correctly
+  //     const propertiesResponse = await propertiesAPI.getProperties({ limit: 100 });
+  //     console.log('Properties response:', propertiesResponse);
+      
+  //     // Handle different response formats
+  //     if (propertiesResponse && propertiesResponse.properties) {
+  //       setProperties(propertiesResponse.properties);
+  //       console.log(`Loaded ${propertiesResponse.properties.length} properties`);
+  //     } else if (Array.isArray(propertiesResponse)) {
+  //       setProperties(propertiesResponse);
+  //       console.log(`Loaded ${propertiesResponse.length} properties (array format)`);
+  //     } else {
+  //       console.warn('Unexpected properties format:', propertiesResponse);
+  //       setProperties([]);
+  //     }
+
+  //     // Build query params for expenses
+  //     const params: any = {
+  //       startDate: dateRange.startDate,
+  //       endDate: dateRange.endDate
+  //     };
+      
+  //     if (filters.category !== 'all') params.category = filters.category;
+  //     if (filters.status !== 'all') params.status = filters.status;
+  //     if (filters.propertyId !== 'all' && filters.propertyId !== 'general') params.propertyId = filters.propertyId;
+  //     if (filters.search) params.search = filters.search;
+
+  //     // Fetch all data in parallel
+  //     const [expensesResponse, budgetsResponse, vendorsResponse] = await Promise.all([
+  //       expenseAPI.getExpenses(params).catch(err => {
+  //         console.log('Expenses endpoint not available yet:', err.message);
+  //         return { expenses: [], stats: null };
+  //       }),
+  //       expenseAPI.getBudgets().catch(err => {
+  //         console.log('Budgets endpoint not available yet:', err.message);
+  //         return { budgets: [] };
+  //       }),
+  //       expenseAPI.getVendors().catch(err => {
+  //         console.log('Vendors endpoint not available yet:', err.message);
+  //         return { vendors: [] };
+  //       })
+  //     ]);
+
+  //     setExpenses(expensesResponse.expenses || []);
+  //     setStats(expensesResponse.stats || null);
+  //     setBudgets(budgetsResponse.budgets || []);
+  //     setVendors(vendorsResponse.vendors || []);
+
+  //   } catch (error: any) {
+  //     console.error('Failed to fetch expense data:', error);
+  //     setError(error.response?.data?.message || 'Failed to load expense data');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+
+const fetchData = async () => {
+  try {
+    setLoading(true);
+    setError('');
+    
+    console.log('========== FETCHING EXPENSE DATA ==========');
+
+    // Fetch properties
+    try {
       const propertiesResponse = await propertiesAPI.getProperties({ limit: 100 });
       console.log('Properties response:', propertiesResponse);
       
-      // Handle different response formats
       if (propertiesResponse && propertiesResponse.properties) {
         setProperties(propertiesResponse.properties);
-        console.log(`Loaded ${propertiesResponse.properties.length} properties`);
       } else if (Array.isArray(propertiesResponse)) {
         setProperties(propertiesResponse);
-        console.log(`Loaded ${propertiesResponse.length} properties (array format)`);
       } else {
-        console.warn('Unexpected properties format:', propertiesResponse);
         setProperties([]);
       }
+    } catch (propError) {
+      console.error('Error fetching properties:', propError);
+    }
 
-      // Build query params for expenses
-      const params: any = {
-        startDate: dateRange.startDate,
-        endDate: dateRange.endDate
-      };
-      
-      if (filters.category !== 'all') params.category = filters.category;
-      if (filters.status !== 'all') params.status = filters.status;
-      if (filters.propertyId !== 'all' && filters.propertyId !== 'general') params.propertyId = filters.propertyId;
-      if (filters.search) params.search = filters.search;
+    // Build query params for expenses
+    const params: any = {
+      startDate: dateRange.startDate,
+      endDate: dateRange.endDate
+    };
+    
+    if (filters.category !== 'all') params.category = filters.category;
+    if (filters.status !== 'all') params.status = filters.status;
+    if (filters.propertyId !== 'all' && filters.propertyId !== 'general') params.propertyId = filters.propertyId;
+    if (filters.search) params.search = filters.search;
 
-      // Fetch all data in parallel
-      const [expensesResponse, budgetsResponse, vendorsResponse] = await Promise.all([
-        expenseAPI.getExpenses(params).catch(err => {
-          console.log('Expenses endpoint not available yet:', err.message);
-          return { expenses: [], stats: null };
-        }),
-        expenseAPI.getBudgets().catch(err => {
-          console.log('Budgets endpoint not available yet:', err.message);
-          return { budgets: [] };
-        }),
-        expenseAPI.getVendors().catch(err => {
-          console.log('Vendors endpoint not available yet:', err.message);
-          return { vendors: [] };
-        })
-      ]);
-
+    // Fetch expenses
+    try {
+      const expensesResponse = await expenseAPI.getExpenses(params);
+      console.log('Expenses response:', expensesResponse);
       setExpenses(expensesResponse.expenses || []);
       setStats(expensesResponse.stats || null);
-      setBudgets(budgetsResponse.budgets || []);
-      setVendors(vendorsResponse.vendors || []);
-
-    } catch (error: any) {
-      console.error('Failed to fetch expense data:', error);
-      setError(error.response?.data?.message || 'Failed to load expense data');
-    } finally {
-      setLoading(false);
+    } catch (expError) {
+      console.error('Error fetching expenses:', expError);
     }
-  };
+
+    // Fetch budgets - with better error handling
+    try {
+      const budgetsResponse = await expenseAPI.getBudgets();
+      console.log('Budgets response:', budgetsResponse);
+      
+      // Check different possible response formats
+      if (budgetsResponse && budgetsResponse.budgets) {
+        setBudgets(budgetsResponse.budgets);
+        console.log('Set budgets:', budgetsResponse.budgets.length);
+      } else if (Array.isArray(budgetsResponse)) {
+        setBudgets(budgetsResponse);
+        console.log('Set budgets (array):', budgetsResponse.length);
+      } else {
+        console.warn('Unexpected budgets format:', budgetsResponse);
+        setBudgets([]);
+      }
+    } catch (budgetError: any) {
+      console.error('Error fetching budgets:', budgetError);
+      console.error('Budget error response:', budgetError.response?.data);
+    }
+
+    // Fetch vendors - with better error handling
+    try {
+      const vendorsResponse = await expenseAPI.getVendors();
+      console.log('Vendors response:', vendorsResponse);
+      
+      // Check different possible response formats
+      if (vendorsResponse && vendorsResponse.vendors) {
+        setVendors(vendorsResponse.vendors);
+        console.log('Set vendors:', vendorsResponse.vendors.length);
+      } else if (Array.isArray(vendorsResponse)) {
+        setVendors(vendorsResponse);
+        console.log('Set vendors (array):', vendorsResponse.length);
+      } else {
+        console.warn('Unexpected vendors format:', vendorsResponse);
+        setVendors([]);
+      }
+    } catch (vendorError: any) {
+      console.error('Error fetching vendors:', vendorError);
+      console.error('Vendor error response:', vendorError.response?.data);
+    }
+
+    console.log('========== FETCH COMPLETE ==========');
+
+  } catch (error: any) {
+    console.error('Failed to fetch expense data:', error);
+    setError(error.response?.data?.message || 'Failed to load expense data');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   // Helper functions
   const formatCurrency = (amount: number) => {
@@ -479,6 +577,103 @@ export default function ExpenseLogger() {
 
 
 // Add budget function
+// const addBudget = async () => {
+//   try {
+//     if (!newBudget.category || !newBudget.allocated || !newBudget.period || !newBudget.fiscalYear) {
+//       alert('Please fill in all required fields');
+//       return;
+//     }
+
+//     const budgetData = {
+//       category: newBudget.category.trim(),
+//       allocated: Number(newBudget.allocated),
+//       period: newBudget.period,
+//       fiscalYear: Number(newBudget.fiscalYear),
+//       notes: newBudget.notes?.trim() || undefined
+//     };
+
+//     console.log('Sending budget data:', budgetData);
+
+//     const response = await expenseAPI.createBudget(budgetData);
+    
+//     if (response && response.budget) {
+//       setBudgets([...budgets, response.budget]);
+//       setShowBudgetModal(false);
+//       setNewBudget({
+//         category: '',
+//         allocated: 0,
+//         period: 'monthly',
+//         fiscalYear: new Date().getFullYear(),
+//         notes: ''
+//       });
+//       alert('Budget created successfully!');
+//     }
+
+//   } catch (error: any) {
+//     console.error('Add budget error:', error);
+    
+//     // Show more detailed error message
+//     const errorMessage = error.response?.data?.message || 
+//                         error.response?.data?.error || 
+//                         error.message || 
+//                         'Failed to create budget';
+    
+//     // Show validation errors if any
+//     if (error.response?.data?.errors) {
+//       const validationErrors = error.response.data.errors.map((e: any) => 
+//         `${e.field}: ${e.message}`
+//       ).join('\n');
+//       alert(`Validation failed:\n${validationErrors}`);
+//     } else {
+//       alert(errorMessage);
+//     }
+//   }
+// };
+
+//   // Add vendor function
+//   const addVendor = async () => {
+//     try {
+//       if (!newVendor.name || !newVendor.category || !newVendor.phone || !newVendor.email) {
+//         alert('Please fill in all required fields');
+//         return;
+//       }
+
+//       const vendorData = {
+//         ...newVendor,
+//         email: newVendor.email.toLowerCase()
+//       };
+
+//       const response = await expenseAPI.createVendor(vendorData);
+      
+//       if (response && response.vendor) {
+//         setVendors([...vendors, response.vendor]);
+//         setShowAddVendorModal(false);
+//         setNewVendor({
+//           name: '',
+//           category: 'maintenance',
+//           contactPerson: { name: '', phone: '', email: '' },
+//           phone: '',
+//           email: '',
+//           address: { street: '', city: '', state: '', zipCode: '', country: 'Nigeria' },
+//           taxId: '',
+//           paymentTerms: 'net30',
+//           preferred: false,
+//           rating: 3,
+//           notes: ''
+//         });
+//         alert('Vendor added successfully!');
+//       }
+
+//     } catch (error: any) {
+//       console.error('Add vendor error:', error);
+//       alert(error.response?.data?.message || 'Failed to add vendor');
+//     }
+//   };
+
+
+
+
+// Add budget function
 const addBudget = async () => {
   try {
     if (!newBudget.category || !newBudget.allocated || !newBudget.period || !newBudget.fiscalYear) {
@@ -497,9 +692,11 @@ const addBudget = async () => {
     console.log('Sending budget data:', budgetData);
 
     const response = await expenseAPI.createBudget(budgetData);
+    console.log('Create budget response:', response);
     
     if (response && response.budget) {
-      setBudgets([...budgets, response.budget]);
+      // Immediately update the budgets list
+      setBudgets(prevBudgets => [response.budget, ...prevBudgets]);
       setShowBudgetModal(false);
       setNewBudget({
         category: '',
@@ -508,27 +705,62 @@ const addBudget = async () => {
         fiscalYear: new Date().getFullYear(),
         notes: ''
       });
+      
+      // Also refresh data from server to be sure
+      await fetchData();
       alert('Budget created successfully!');
     }
 
   } catch (error: any) {
     console.error('Add budget error:', error);
-    
-    // Show more detailed error message
-    const errorMessage = error.response?.data?.message || 
-                        error.response?.data?.error || 
-                        error.message || 
-                        'Failed to create budget';
-    
-    // Show validation errors if any
-    if (error.response?.data?.errors) {
-      const validationErrors = error.response.data.errors.map((e: any) => 
-        `${e.field}: ${e.message}`
-      ).join('\n');
-      alert(`Validation failed:\n${validationErrors}`);
-    } else {
-      alert(errorMessage);
+    alert(error.response?.data?.message || 'Failed to create budget');
+  }
+};
+
+// Add vendor function
+const addVendor = async () => {
+  try {
+    if (!newVendor.name || !newVendor.category || !newVendor.phone || !newVendor.email) {
+      alert('Please fill in all required fields');
+      return;
     }
+
+    const vendorData = {
+      ...newVendor,
+      email: newVendor.email.toLowerCase()
+    };
+
+    console.log('Sending vendor data:', vendorData);
+
+    const response = await expenseAPI.createVendor(vendorData);
+    console.log('Create vendor response:', response);
+    
+    if (response && response.vendor) {
+      // Immediately update the vendors list
+      setVendors(prevVendors => [response.vendor, ...prevVendors]);
+      setShowAddVendorModal(false);
+      setNewVendor({
+        name: '',
+        category: 'maintenance',
+        contactPerson: { name: '', phone: '', email: '' },
+        phone: '',
+        email: '',
+        address: { street: '', city: '', state: '', zipCode: '', country: 'Nigeria' },
+        taxId: '',
+        paymentTerms: 'net30',
+        preferred: false,
+        rating: 3,
+        notes: ''
+      });
+      
+      // Also refresh data from server to be sure
+      await fetchData();
+      alert('Vendor added successfully!');
+    }
+
+  } catch (error: any) {
+    console.error('Add vendor error:', error);
+    alert(error.response?.data?.message || 'Failed to add vendor');
   }
 };
 
@@ -536,45 +768,6 @@ const addBudget = async () => {
 
 
 
-  // Add vendor function
-  const addVendor = async () => {
-    try {
-      if (!newVendor.name || !newVendor.category || !newVendor.phone || !newVendor.email) {
-        alert('Please fill in all required fields');
-        return;
-      }
-
-      const vendorData = {
-        ...newVendor,
-        email: newVendor.email.toLowerCase()
-      };
-
-      const response = await expenseAPI.createVendor(vendorData);
-      
-      if (response && response.vendor) {
-        setVendors([...vendors, response.vendor]);
-        setShowAddVendorModal(false);
-        setNewVendor({
-          name: '',
-          category: 'maintenance',
-          contactPerson: { name: '', phone: '', email: '' },
-          phone: '',
-          email: '',
-          address: { street: '', city: '', state: '', zipCode: '', country: 'Nigeria' },
-          taxId: '',
-          paymentTerms: 'net30',
-          preferred: false,
-          rating: 3,
-          notes: ''
-        });
-        alert('Vendor added successfully!');
-      }
-
-    } catch (error: any) {
-      console.error('Add vendor error:', error);
-      alert(error.response?.data?.message || 'Failed to add vendor');
-    }
-  };
 
   // Update vendor function
   const updateVendor = async () => {
