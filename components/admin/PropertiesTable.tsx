@@ -1,3 +1,4 @@
+// client/components/admin/PropertiesTable.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -100,7 +101,7 @@ export default function PropertiesTable() {
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 capitalize">{property.type}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${property.price}/night</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₦{property.price}/night</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{property.totalBookings}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   <div className="flex items-center">

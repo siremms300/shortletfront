@@ -1,3 +1,4 @@
+// client/app/propertylist/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -292,7 +293,7 @@ export default function PropertiesPage() {
       <div className="bg-[#383a3c] text-[#fcfeff] py-12 md:py-16">
         <div className="container mx-auto px-4">
           <h1 className="text-3xl md:text-4xl font-bold mb-4">Find Your Perfect Stay</h1>
-          <p className="text-lg md:text-xl opacity-90">Discover amazing shortlet apartments across Lagos</p>
+          <p className="text-lg md:text-xl opacity-90">Discover amazing shortlet apartments across Kaduna</p>
         </div>
       </div>
 
