@@ -1,3 +1,4 @@
+// clients/components/PropertyCard.tsx
 import Link from 'next/link';
 
 interface PropertyCardProps {

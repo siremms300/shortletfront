@@ -1,3 +1,4 @@
+// client/app/properties/new/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -120,30 +121,100 @@ export default function NewPropertyPage() {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   setLoading(true);
 
-    try {
-      const submitData = new FormData();
+  //   try {
+  //     const submitData = new FormData();
       
-      // Append basic form data
-      submitData.append('title', formData.title);
-      submitData.append('type', formData.type);
-      submitData.append('price', formData.price);
-      submitData.append('location', formData.location);
-      submitData.append('description', formData.description);
-      submitData.append('bedrooms', formData.bedrooms);
-      submitData.append('bathrooms', formData.bathrooms);
-      submitData.append('maxGuests', formData.maxGuests);
-      submitData.append('squareFeet', formData.squareFeet);
-      submitData.append('amenities', JSON.stringify(formData.amenities));
-      submitData.append('utilityPercentage', formData.utilityPercentage);
-      submitData.append('serviceChargePercentage', formData.serviceChargePercentage);
-      submitData.append('vatPercentage', formData.vatPercentage);
+  //     // Append basic form data
+  //     submitData.append('title', formData.title);
+  //     submitData.append('type', formData.type);
+  //     submitData.append('price', formData.price);
+  //     submitData.append('location', formData.location);
+  //     submitData.append('description', formData.description);
+  //     submitData.append('bedrooms', formData.bedrooms);
+  //     submitData.append('bathrooms', formData.bathrooms);
+  //     submitData.append('maxGuests', formData.maxGuests);
+  //     submitData.append('squareFeet', formData.squareFeet);
+  //     submitData.append('amenities', JSON.stringify(formData.amenities));
+  //     submitData.append('utilityPercentage', formData.utilityPercentage);
+  //     submitData.append('serviceChargePercentage', formData.serviceChargePercentage);
+  //     submitData.append('vatPercentage', formData.vatPercentage);
       
-      // Append discount data
-      if (formData.discountActive && formData.discountType && formData.discountValue) {
+  //     // Append discount data
+  //     if (formData.discountActive && formData.discountType && formData.discountValue) {
+  //       const discountData = {
+  //         type: formData.discountType,
+  //         value: parseFloat(formData.discountValue),
+  //         startDate: formData.discountStartDate || null,
+  //         endDate: formData.discountEndDate || null,
+  //         isActive: true
+  //       };
+  //       submitData.append('discount', JSON.stringify(discountData));
+  //     }
+
+  //     // Append images
+  //     images.forEach((image) => {
+  //       submitData.append('images', image);
+  //     });
+
+  //     const response = await propertiesAPI.createProperty(submitData);
+
+      
+  //     // In handleSubmit, right before sending the request
+  //     console.log('Discount data being sent:', {
+  //       discountActive: formData.discountActive,
+  //       discountType: formData.discountType,
+  //       discountValue: formData.discountValue,
+  //       discountStartDate: formData.discountStartDate,
+  //       discountEndDate: formData.discountEndDate
+  //     });
+
+      
+  //     alert('Property created successfully!');
+  //     router.push('/admin/properties');
+      
+  //   } catch (error: any) {
+  //     console.error('Error creating property:', error);
+  //     alert(error.response?.data?.message || 'Failed to create property');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+
+
+
+// In handleSubmit function, update the discount data handling:
+
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setLoading(true);
+
+  try {
+    const submitData = new FormData();
+    
+    // Append basic form data
+    submitData.append('title', formData.title);
+    submitData.append('type', formData.type);
+    submitData.append('price', formData.price);
+    submitData.append('location', formData.location);
+    submitData.append('description', formData.description);
+    submitData.append('bedrooms', formData.bedrooms);
+    submitData.append('bathrooms', formData.bathrooms);
+    submitData.append('maxGuests', formData.maxGuests);
+    submitData.append('squareFeet', formData.squareFeet);
+    submitData.append('amenities', JSON.stringify(formData.amenities));
+    submitData.append('utilityPercentage', formData.utilityPercentage);
+    submitData.append('serviceChargePercentage', formData.serviceChargePercentage);
+    submitData.append('vatPercentage', formData.vatPercentage);
+    
+    // FIXED: Handle discount data properly
+    if (formData.discountActive) {
+      // Only send discount if it's active and has required fields
+      if (formData.discountType && formData.discountValue) {
         const discountData = {
           type: formData.discountType,
           value: parseFloat(formData.discountValue),
@@ -151,37 +222,41 @@ export default function NewPropertyPage() {
           endDate: formData.discountEndDate || null,
           isActive: true
         };
+        
+        // Log discount data being sent
+        console.log('📤 Sending discount data:', discountData);
+        
+        // Stringify the discount object
         submitData.append('discount', JSON.stringify(discountData));
       }
-
-      // Append images
-      images.forEach((image) => {
-        submitData.append('images', image);
-      });
-
-      const response = await propertiesAPI.createProperty(submitData);
-
-      
-      // In handleSubmit, right before sending the request
-      console.log('Discount data being sent:', {
-        discountActive: formData.discountActive,
-        discountType: formData.discountType,
-        discountValue: formData.discountValue,
-        discountStartDate: formData.discountStartDate,
-        discountEndDate: formData.discountEndDate
-      });
-
-      
-      alert('Property created successfully!');
-      router.push('/admin/properties');
-      
-    } catch (error: any) {
-      console.error('Error creating property:', error);
-      alert(error.response?.data?.message || 'Failed to create property');
-    } finally {
-      setLoading(false);
+    } else {
+      // If discount is not active, send null to remove any existing discount
+      submitData.append('discount', JSON.stringify(null));
     }
-  };
+
+    // Append images
+    images.forEach((image) => {
+      submitData.append('images', image);
+    });
+
+    console.log('📦 FormData prepared with discount:', submitData.get('discount'));
+
+    const response = await propertiesAPI.createProperty(submitData);
+    
+    alert('Property created successfully!');
+    router.push('/admin/properties');
+    
+  } catch (error: any) {
+    console.error('Error creating property:', error);
+    alert(error.response?.data?.message || 'Failed to create property');
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
+
 
 
 
@@ -374,7 +449,7 @@ export default function NewPropertyPage() {
                 value={formData.location}
                 onChange={handleInputChange}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f06123]" 
-                placeholder="Victoria Island, Lagos" 
+                placeholder="Barnawa, Kaduna" 
                 required
               />
             </div>

@@ -374,8 +374,531 @@ export const usersAPI = {
 // };
 
 // Property API calls (using serverApi for server components)
+// export const propertiesAPI = {
+//   // Get all properties (public - no auth required)
+//   getProperties: async (params?: any) => {
+//     try {
+//       console.log('🔍 [Frontend API] Fetching properties with params:', params);
+      
+//       const response = await serverApi.get('/properties', { params });
+//       console.log('📥 [Frontend API] Properties response:', {
+//         hasProperties: !!response.data.properties,
+//         dataType: Array.isArray(response.data) ? 'array' : 'object',
+//         data: response.data
+//       });
+      
+//       // Handle both response formats
+//       let properties = [];
+      
+//       if (response.data.properties) {
+//         // Response format: { properties: [], totalPages, currentPage, total }
+//         properties = response.data.properties;
+//       } else if (Array.isArray(response.data)) {
+//         // Response format: [] (array directly)
+//         properties = response.data;
+//       } else if (response.data && typeof response.data === 'object') {
+//         // Check if it's a single property or other format
+//         properties = [response.data];
+//       }
+      
+//       console.log('✅ [Frontend API] Extracted properties:', properties.length);
+      
+//       // Ensure all properties have the new price structure
+//       const enhancedProperties = properties.map((property: any) => {
+//         // If property doesn't have calculatedPrices, create it
+//         if (!property.calculatedPrices && property.price) {
+//           const utilityPercentage = property.utilityPercentage || 20;
+//           const serviceChargePercentage = property.serviceChargePercentage || 10;
+//           const vatPercentage = property.vatPercentage || 7.5;
+//           const actualPrice = property.price;
+          
+//           const utility = (actualPrice * utilityPercentage) / 100;
+//           const serviceCharge = (actualPrice * serviceChargePercentage) / 100;
+//           const accommodation = actualPrice - utility - serviceCharge;
+//           const vat = (accommodation * vatPercentage) / 100;
+//           const total = actualPrice + vat;
+          
+//           return {
+//             ...property,
+//             utilityPercentage,
+//             serviceChargePercentage,
+//             vatPercentage,
+//             calculatedPrices: {
+//               actualPrice,
+//               utility: Math.round(utility * 100) / 100,
+//               serviceCharge: Math.round(serviceCharge * 100) / 100,
+//               accommodation: Math.round(accommodation * 100) / 100,
+//               vat: Math.round(vat * 100) / 100,
+//               total: Math.round(total * 100) / 100
+//             }
+//           };
+//         }
+//         return property;
+//       });
+      
+//       return enhancedProperties;
+//     } catch (error: any) {
+//       console.error('💥 [Frontend API] Error fetching properties:', error);
+//       throw new Error(error.response?.data?.message || 'Failed to fetch properties');
+//     }
+//   },
+
+//   // Get featured properties (public - no auth required)
+//   getFeaturedProperties: async () => {
+//     try {
+//       const response = await serverApi.get('/properties/featured');
+      
+//       // Ensure featured properties have the new price structure
+//       const featuredProperties = Array.isArray(response.data) ? response.data : [];
+      
+//       return featuredProperties.map((property: any) => {
+//         if (!property.calculatedPrices && property.price) {
+//           const utilityPercentage = property.utilityPercentage || 20;
+//           const serviceChargePercentage = property.serviceChargePercentage || 10;
+//           const vatPercentage = property.vatPercentage || 7.5;
+//           const actualPrice = property.price;
+          
+//           const utility = (actualPrice * utilityPercentage) / 100;
+//           const serviceCharge = (actualPrice * serviceChargePercentage) / 100;
+//           const accommodation = actualPrice - utility - serviceCharge;
+//           const vat = (accommodation * vatPercentage) / 100;
+//           const total = actualPrice + vat;
+          
+//           return {
+//             ...property,
+//             utilityPercentage,
+//             serviceChargePercentage,
+//             vatPercentage,
+//             calculatedPrices: {
+//               actualPrice,
+//               utility: Math.round(utility * 100) / 100,
+//               serviceCharge: Math.round(serviceCharge * 100) / 100,
+//               accommodation: Math.round(accommodation * 100) / 100,
+//               vat: Math.round(vat * 100) / 100,
+//               total: Math.round(total * 100) / 100
+//             }
+//           };
+//         }
+//         return property;
+//       });
+//     } catch (error: any) {
+//       console.error('💥 [Frontend API] Error fetching featured properties:', error);
+//       throw new Error(error.response?.data?.message || 'Failed to fetch featured properties');
+//     }
+//   },
+
+//   // Get property by ID
+//   getPropertyById: async (id: string) => {
+//     try {
+//       console.log('🔍 [Frontend API] Fetching property with ID:', id);
+
+//       // Validate ID before making the request
+//       if (!id || id === 'undefined') {
+//         console.error('❌ [Frontend API] Invalid property ID - undefined');
+//         throw new Error('Property ID is required');
+//       }
+
+//       const isValidObjectId = /^[0-9a-fA-F]{24}$/.test(id);
+//       if (!isValidObjectId) {
+//         console.error('❌ [Frontend API] Invalid ObjectId format:', id);
+//         throw new Error('Invalid property ID format');
+//       }
+
+//       console.log('✅ [Frontend API] ID validation passed, making request...');
+      
+//       const response = await serverApi.get(`/properties/${id}`);
+//       console.log('✅ [Frontend API] Property fetched successfully');
+      
+//       // Ensure the property has the new price structure
+//       const property = response.data;
+      
+//       if (property && !property.calculatedPrices && property.price) {
+//         const utilityPercentage = property.utilityPercentage || 20;
+//         const serviceChargePercentage = property.serviceChargePercentage || 10;
+//         const vatPercentage = property.vatPercentage || 7.5;
+//         const actualPrice = property.price;
+        
+//         const utility = (actualPrice * utilityPercentage) / 100;
+//         const serviceCharge = (actualPrice * serviceChargePercentage) / 100;
+//         const accommodation = actualPrice - utility - serviceCharge;
+//         const vat = (accommodation * vatPercentage) / 100;
+//         const total = actualPrice + vat;
+        
+//         return {
+//           ...property,
+//           utilityPercentage,
+//           serviceChargePercentage,
+//           vatPercentage,
+//           calculatedPrices: {
+//             actualPrice,
+//             utility: Math.round(utility * 100) / 100,
+//             serviceCharge: Math.round(serviceCharge * 100) / 100,
+//             accommodation: Math.round(accommodation * 100) / 100,
+//             vat: Math.round(vat * 100) / 100,
+//             total: Math.round(total * 100) / 100
+//           }
+//         };
+//       }
+      
+//       return property;
+//     } catch (error: any) {
+//       console.error('💥 [Frontend API] Error fetching property:', error);
+      
+//       // Handle specific HTTP status codes
+//       if (error.response?.status === 400) {
+//         throw new Error(error.response.data?.message || 'Invalid property ID format');
+//       }
+//       if (error.response?.status === 404) {
+//         throw new Error(error.response.data?.message || 'Property not found');
+//       }
+//       if (error.response?.status === 500) {
+//         const serverMessage = error.response.data?.message || 'Server error';
+//         console.error('💥 [Frontend API] Server error details:', error.response.data);
+//         throw new Error(`Server error: ${serverMessage}`);
+//       }
+      
+//       throw new Error(error.message || 'Failed to fetch property');
+//     }
+//   },
+
+//   // Create property (requires auth)
+//   // createProperty: async (propertyData: FormData) => {
+//   //   try {
+//   //     const response = await api.post('/properties', propertyData, {
+//   //       headers: { 'Content-Type': 'multipart/form-data' },
+//   //     });
+      
+//   //     // Ensure response has calculatedPrices
+//   //     if (response.data.property && !response.data.property.calculatedPrices) {
+//   //       const property = response.data.property;
+//   //       const utilityPercentage = property.utilityPercentage || 20;
+//   //       const serviceChargePercentage = property.serviceChargePercentage || 10;
+//   //       const vatPercentage = property.vatPercentage || 7.5;
+//   //       const actualPrice = property.price;
+        
+//   //       const utility = (actualPrice * utilityPercentage) / 100;
+//   //       const serviceCharge = (actualPrice * serviceChargePercentage) / 100;
+//   //       const accommodation = actualPrice - utility - serviceCharge;
+//   //       const vat = (accommodation * vatPercentage) / 100;
+//   //       const total = actualPrice + vat;
+        
+//   //       response.data.property.calculatedPrices = {
+//   //         actualPrice,
+//   //         utility: Math.round(utility * 100) / 100,
+//   //         serviceCharge: Math.round(serviceCharge * 100) / 100,
+//   //         accommodation: Math.round(accommodation * 100) / 100,
+//   //         vat: Math.round(vat * 100) / 100,
+//   //         total: Math.round(total * 100) / 100
+//   //       };
+//   //     }
+      
+//   //     return response.data;
+//   //   } catch (error: any) {
+//   //     console.error('💥 [Frontend API] Error creating property:', error);
+//   //     throw new Error(error.response?.data?.message || 'Failed to create property');
+//   //   }
+//   // },
+
+
+
+//   // Update propertiesAPI.createProperty to properly handle discount data
+//   createProperty: async (propertyData: FormData) => {
+//     try {
+//       // Log FormData contents for debugging
+//       console.log('📤 Sending FormData with discount:');
+//       for (const [key, value] of propertyData.entries()) {
+//         if (key === 'discount') {
+//           console.log('  - discount:', value);
+//         }
+//       }
+      
+//       const response = await api.post('/properties', propertyData, {
+//         headers: { 'Content-Type': 'multipart/form-data' },
+//       });
+      
+//       console.log('📥 Create property response:', response.data);
+      
+//       return response.data;
+//     } catch (error: any) {
+//       console.error('💥 Error creating property:', error);
+//       throw new Error(error.response?.data?.message || 'Failed to create property');
+//     }
+//   },
+
+//   // Update propertiesAPI.updateProperty
+//   updateProperty: async (id: string, propertyData: FormData) => {
+//     try {
+//       // Log FormData contents for debugging
+//       console.log('📤 Sending FormData with discount for update:');
+//       for (const [key, value] of propertyData.entries()) {
+//         if (key === 'discount') {
+//           console.log('  - discount:', value);
+//         }
+//       }
+      
+//       const response = await api.put(`/properties/${id}`, propertyData, {
+//         headers: { 'Content-Type': 'multipart/form-data' },
+//       });
+      
+//       console.log('📥 Update property response:', response.data);
+      
+//       return response.data;
+//     } catch (error: any) {
+//       console.error('💥 Error updating property:', error);
+//       throw new Error(error.response?.data?.message || 'Failed to update property');
+//     }
+//   },
+
+
+
+
+//   // Update property (requires auth)
+//   // updateProperty: async (id: string, propertyData: FormData) => {
+//   //   try {
+//   //     const response = await api.put(`/properties/${id}`, propertyData, {
+//   //       headers: { 'Content-Type': 'multipart/form-data' },
+//   //     });
+      
+//   //     // Ensure response has calculatedPrices
+//   //     if (response.data.property && !response.data.property.calculatedPrices) {
+//   //       const property = response.data.property;
+//   //       const utilityPercentage = property.utilityPercentage || 20;
+//   //       const serviceChargePercentage = property.serviceChargePercentage || 10;
+//   //       const vatPercentage = property.vatPercentage || 7.5;
+//   //       const actualPrice = property.price;
+        
+//   //       const utility = (actualPrice * utilityPercentage) / 100;
+//   //       const serviceCharge = (actualPrice * serviceChargePercentage) / 100;
+//   //       const accommodation = actualPrice - utility - serviceCharge;
+//   //       const vat = (accommodation * vatPercentage) / 100;
+//   //       const total = actualPrice + vat;
+        
+//   //       response.data.property.calculatedPrices = {
+//   //         actualPrice,
+//   //         utility: Math.round(utility * 100) / 100,
+//   //         serviceCharge: Math.round(serviceCharge * 100) / 100,
+//   //         accommodation: Math.round(accommodation * 100) / 100,
+//   //         vat: Math.round(vat * 100) / 100,
+//   //         total: Math.round(total * 100) / 100
+//   //       };
+//   //     }
+      
+//   //     return response.data;
+//   //   } catch (error: any) {
+//   //     console.error('💥 [Frontend API] Error updating property:', error);
+//   //     throw new Error(error.response?.data?.message || 'Failed to update property');
+//   //   }
+//   // },
+
+//   // Delete property (requires auth)
+//   deleteProperty: async (id: string) => {
+//     try {
+//       const response = await api.delete(`/properties/${id}`);
+//       return response.data;
+//     } catch (error: any) {
+//       console.error('💥 [Frontend API] Error deleting property:', error);
+//       throw new Error(error.response?.data?.message || 'Failed to delete property');
+//     }
+//   },
+
+//   // Get user's properties (requires auth)
+//   getUserProperties: async () => {
+//     try {
+//       const response = await api.get('/properties/user/my-properties');
+      
+//       // Ensure properties have the new price structure
+//       const userProperties = Array.isArray(response.data) ? response.data : [];
+      
+//       return userProperties.map((property: any) => {
+//         if (!property.calculatedPrices && property.price) {
+//           const utilityPercentage = property.utilityPercentage || 20;
+//           const serviceChargePercentage = property.serviceChargePercentage || 10;
+//           const vatPercentage = property.vatPercentage || 7.5;
+//           const actualPrice = property.price;
+          
+//           const utility = (actualPrice * utilityPercentage) / 100;
+//           const serviceCharge = (actualPrice * serviceChargePercentage) / 100;
+//           const accommodation = actualPrice - utility - serviceCharge;
+//           const vat = (accommodation * vatPercentage) / 100;
+//           const total = actualPrice + vat;
+          
+//           return {
+//             ...property,
+//             utilityPercentage,
+//             serviceChargePercentage,
+//             vatPercentage,
+//             calculatedPrices: {
+//               actualPrice,
+//               utility: Math.round(utility * 100) / 100,
+//               serviceCharge: Math.round(serviceCharge * 100) / 100,
+//               accommodation: Math.round(accommodation * 100) / 100,
+//               vat: Math.round(vat * 100) / 100,
+//               total: Math.round(total * 100) / 100
+//             }
+//           };
+//         }
+//         return property;
+//       });
+//     } catch (error: any) {
+//       console.error('💥 [Frontend API] Error fetching user properties:', error);
+//       throw new Error(error.response?.data?.message || 'Failed to fetch user properties');
+//     }
+//   },
+
+//   // Admin: Get all properties (requires admin auth)
+//   getAdminProperties: async (params?: any) => {
+//     try {
+//       const response = await api.get('/properties/admin/all', { params });
+      
+//       // Ensure admin properties have the new price structure
+//       let properties = [];
+      
+//       if (response.data.properties) {
+//         properties = response.data.properties;
+//       } else if (Array.isArray(response.data)) {
+//         properties = response.data;
+//       }
+      
+//       const enhancedProperties = properties.map((property: any) => {
+//         if (!property.calculatedPrices && property.price) {
+//           const utilityPercentage = property.utilityPercentage || 20;
+//           const serviceChargePercentage = property.serviceChargePercentage || 10;
+//           const vatPercentage = property.vatPercentage || 7.5;
+//           const actualPrice = property.price;
+          
+//           const utility = (actualPrice * utilityPercentage) / 100;
+//           const serviceCharge = (actualPrice * serviceChargePercentage) / 100;
+//           const accommodation = actualPrice - utility - serviceCharge;
+//           const vat = (accommodation * vatPercentage) / 100;
+//           const total = actualPrice + vat;
+          
+//           return {
+//             ...property,
+//             utilityPercentage,
+//             serviceChargePercentage,
+//             vatPercentage,
+//             calculatedPrices: {
+//               actualPrice,
+//               utility: Math.round(utility * 100) / 100,
+//               serviceCharge: Math.round(serviceCharge * 100) / 100,
+//               accommodation: Math.round(accommodation * 100) / 100,
+//               vat: Math.round(vat * 100) / 100,
+//               total: Math.round(total * 100) / 100
+//             }
+//           };
+//         }
+//         return property;
+//       });
+      
+//       return {
+//         ...response.data,
+//         properties: enhancedProperties
+//       };
+//     } catch (error: any) {
+//       console.error('💥 [Frontend API] Error fetching admin properties:', error);
+//       throw new Error(error.response?.data?.message || 'Failed to fetch admin properties');
+//     }
+//   },
+
+//   // Admin: Update property status (requires admin auth)
+//   updatePropertyStatus: async (id: string, status: string) => {
+//     try {
+//       const response = await api.patch(`/properties/admin/${id}/status`, { status });
+//       return response.data;
+//     } catch (error: any) {
+//       console.error('💥 [Frontend API] Error updating property status:', error);
+//       throw new Error(error.response?.data?.message || 'Failed to update property status');
+//     }
+//   },
+
+//   // Admin: Toggle featured status (requires admin auth)
+//   toggleFeatured: async (id: string) => {
+//     try {
+//       const response = await api.patch(`/properties/admin/${id}/feature`);
+//       return response.data;
+//     } catch (error: any) {
+//       console.error('💥 [Frontend API] Error toggling featured status:', error);
+//       throw new Error(error.response?.data?.message || 'Failed to toggle featured status');
+//     }
+//   }
+// };
+
+
+
+// Helper function to enrich property with calculated prices and discount info
+const enrichPropertyWithDiscount = (property: any): any => {
+  if (!property) return property;
+  
+  // If property has discount, log it
+  if (property.discount && property.discount.isActive) {
+    console.log('💰 Property has active discount:', {
+      id: property._id,
+      type: property.discount.type,
+      value: property.discount.value,
+      originalPrice: property.price,
+      discountedPrice: property.discountedPrice
+    });
+  }
+  
+  // Ensure calculatedPrices exists
+  if (!property.calculatedPrices && property.price) {
+    const utilityPercentage = property.utilityPercentage || 20;
+    const serviceChargePercentage = property.serviceChargePercentage || 10;
+    const vatPercentage = property.vatPercentage || 7.5;
+    
+    // Use discounted price if available
+    const actualPrice = property.discountedPrice || property.price;
+    
+    const utility = (actualPrice * utilityPercentage) / 100;
+    const serviceCharge = (actualPrice * serviceChargePercentage) / 100;
+    const accommodation = actualPrice - utility - serviceCharge;
+    const vat = (accommodation * vatPercentage) / 100;
+    const total = actualPrice + vat;
+    
+    return {
+      ...property,
+      utilityPercentage,
+      serviceChargePercentage,
+      vatPercentage,
+      calculatedPrices: {
+        actualPrice,
+        utility: Math.round(utility * 100) / 100,
+        serviceCharge: Math.round(serviceCharge * 100) / 100,
+        accommodation: Math.round(accommodation * 100) / 100,
+        vat: Math.round(vat * 100) / 100,
+        total: Math.round(total * 100) / 100
+      },
+      // Also add priceBreakdown for backward compatibility
+      priceBreakdown: {
+        actualPrice,
+        utilityPercentage,
+        utility: Math.round(utility * 100) / 100,
+        serviceChargePercentage,
+        serviceCharge: Math.round(serviceCharge * 100) / 100,
+        accommodation: Math.round(accommodation * 100) / 100,
+        vatPercentage,
+        vat: Math.round(vat * 100) / 100,
+        total: Math.round(total * 100) / 100,
+        hasDiscount: !!(property.discount && property.discount.isActive),
+        discountPercentage: property.discountPercentage,
+        discountType: property.discount?.type,
+        discountValue: property.discount?.value
+      }
+    };
+  }
+  
+  return property;
+};
+
+// Helper to enrich array of properties
+const enrichProperties = (properties: any[]): any[] => {
+  if (!Array.isArray(properties)) return [];
+  return properties.map(property => enrichPropertyWithDiscount(property));
+};
+
+// Property API calls
 export const propertiesAPI = {
-  // Get all properties (public - no auth required)
+  // Get all properties (public)
   getProperties: async (params?: any) => {
     try {
       console.log('🔍 [Frontend API] Fetching properties with params:', params);
@@ -384,103 +907,39 @@ export const propertiesAPI = {
       console.log('📥 [Frontend API] Properties response:', {
         hasProperties: !!response.data.properties,
         dataType: Array.isArray(response.data) ? 'array' : 'object',
-        data: response.data
       });
       
-      // Handle both response formats
-      let properties = [];
-      
+      // Handle both response formats and enrich with discount data
       if (response.data.properties) {
         // Response format: { properties: [], totalPages, currentPage, total }
-        properties = response.data.properties;
+        const enrichedProperties = enrichProperties(response.data.properties);
+        return {
+          ...response.data,
+          properties: enrichedProperties
+        };
       } else if (Array.isArray(response.data)) {
         // Response format: [] (array directly)
-        properties = response.data;
+        return enrichProperties(response.data);
       } else if (response.data && typeof response.data === 'object') {
-        // Check if it's a single property or other format
-        properties = [response.data];
+        // Single property or other format
+        return enrichProperties([response.data])[0];
       }
       
-      console.log('✅ [Frontend API] Extracted properties:', properties.length);
-      
-      // Ensure all properties have the new price structure
-      const enhancedProperties = properties.map((property: any) => {
-        // If property doesn't have calculatedPrices, create it
-        if (!property.calculatedPrices && property.price) {
-          const utilityPercentage = property.utilityPercentage || 20;
-          const serviceChargePercentage = property.serviceChargePercentage || 10;
-          const vatPercentage = property.vatPercentage || 7.5;
-          const actualPrice = property.price;
-          
-          const utility = (actualPrice * utilityPercentage) / 100;
-          const serviceCharge = (actualPrice * serviceChargePercentage) / 100;
-          const accommodation = actualPrice - utility - serviceCharge;
-          const vat = (accommodation * vatPercentage) / 100;
-          const total = actualPrice + vat;
-          
-          return {
-            ...property,
-            utilityPercentage,
-            serviceChargePercentage,
-            vatPercentage,
-            calculatedPrices: {
-              actualPrice,
-              utility: Math.round(utility * 100) / 100,
-              serviceCharge: Math.round(serviceCharge * 100) / 100,
-              accommodation: Math.round(accommodation * 100) / 100,
-              vat: Math.round(vat * 100) / 100,
-              total: Math.round(total * 100) / 100
-            }
-          };
-        }
-        return property;
-      });
-      
-      return enhancedProperties;
+      return response.data;
     } catch (error: any) {
       console.error('💥 [Frontend API] Error fetching properties:', error);
       throw new Error(error.response?.data?.message || 'Failed to fetch properties');
     }
   },
 
-  // Get featured properties (public - no auth required)
+  // Get featured properties (public)
   getFeaturedProperties: async () => {
     try {
       const response = await serverApi.get('/properties/featured');
       
-      // Ensure featured properties have the new price structure
+      // Ensure featured properties have discount data
       const featuredProperties = Array.isArray(response.data) ? response.data : [];
-      
-      return featuredProperties.map((property: any) => {
-        if (!property.calculatedPrices && property.price) {
-          const utilityPercentage = property.utilityPercentage || 20;
-          const serviceChargePercentage = property.serviceChargePercentage || 10;
-          const vatPercentage = property.vatPercentage || 7.5;
-          const actualPrice = property.price;
-          
-          const utility = (actualPrice * utilityPercentage) / 100;
-          const serviceCharge = (actualPrice * serviceChargePercentage) / 100;
-          const accommodation = actualPrice - utility - serviceCharge;
-          const vat = (accommodation * vatPercentage) / 100;
-          const total = actualPrice + vat;
-          
-          return {
-            ...property,
-            utilityPercentage,
-            serviceChargePercentage,
-            vatPercentage,
-            calculatedPrices: {
-              actualPrice,
-              utility: Math.round(utility * 100) / 100,
-              serviceCharge: Math.round(serviceCharge * 100) / 100,
-              accommodation: Math.round(accommodation * 100) / 100,
-              vat: Math.round(vat * 100) / 100,
-              total: Math.round(total * 100) / 100
-            }
-          };
-        }
-        return property;
-      });
+      return enrichProperties(featuredProperties);
     } catch (error: any) {
       console.error('💥 [Frontend API] Error fetching featured properties:', error);
       throw new Error(error.response?.data?.message || 'Failed to fetch featured properties');
@@ -492,7 +951,6 @@ export const propertiesAPI = {
     try {
       console.log('🔍 [Frontend API] Fetching property with ID:', id);
 
-      // Validate ID before making the request
       if (!id || id === 'undefined') {
         console.error('❌ [Frontend API] Invalid property ID - undefined');
         throw new Error('Property ID is required');
@@ -509,42 +967,11 @@ export const propertiesAPI = {
       const response = await serverApi.get(`/properties/${id}`);
       console.log('✅ [Frontend API] Property fetched successfully');
       
-      // Ensure the property has the new price structure
-      const property = response.data;
-      
-      if (property && !property.calculatedPrices && property.price) {
-        const utilityPercentage = property.utilityPercentage || 20;
-        const serviceChargePercentage = property.serviceChargePercentage || 10;
-        const vatPercentage = property.vatPercentage || 7.5;
-        const actualPrice = property.price;
-        
-        const utility = (actualPrice * utilityPercentage) / 100;
-        const serviceCharge = (actualPrice * serviceChargePercentage) / 100;
-        const accommodation = actualPrice - utility - serviceCharge;
-        const vat = (accommodation * vatPercentage) / 100;
-        const total = actualPrice + vat;
-        
-        return {
-          ...property,
-          utilityPercentage,
-          serviceChargePercentage,
-          vatPercentage,
-          calculatedPrices: {
-            actualPrice,
-            utility: Math.round(utility * 100) / 100,
-            serviceCharge: Math.round(serviceCharge * 100) / 100,
-            accommodation: Math.round(accommodation * 100) / 100,
-            vat: Math.round(vat * 100) / 100,
-            total: Math.round(total * 100) / 100
-          }
-        };
-      }
-      
-      return property;
+      // Enrich the property with discount data
+      return enrichPropertyWithDiscount(response.data);
     } catch (error: any) {
       console.error('💥 [Frontend API] Error fetching property:', error);
       
-      // Handle specific HTTP status codes
       if (error.response?.status === 400) {
         throw new Error(error.response.data?.message || 'Invalid property ID format');
       }
@@ -561,214 +988,141 @@ export const propertiesAPI = {
     }
   },
 
-  // Create property (requires auth)
+  // Create property
   createProperty: async (propertyData: FormData) => {
     try {
+      // Log FormData contents for debugging
+      console.log('📤 Sending FormData with discount:');
+      for (const [key, value] of propertyData.entries()) {
+        if (key === 'discount') {
+          console.log('  - discount:', value);
+        }
+      }
+      
       const response = await api.post('/properties', propertyData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       
-      // Ensure response has calculatedPrices
-      if (response.data.property && !response.data.property.calculatedPrices) {
-        const property = response.data.property;
-        const utilityPercentage = property.utilityPercentage || 20;
-        const serviceChargePercentage = property.serviceChargePercentage || 10;
-        const vatPercentage = property.vatPercentage || 7.5;
-        const actualPrice = property.price;
-        
-        const utility = (actualPrice * utilityPercentage) / 100;
-        const serviceCharge = (actualPrice * serviceChargePercentage) / 100;
-        const accommodation = actualPrice - utility - serviceCharge;
-        const vat = (accommodation * vatPercentage) / 100;
-        const total = actualPrice + vat;
-        
-        response.data.property.calculatedPrices = {
-          actualPrice,
-          utility: Math.round(utility * 100) / 100,
-          serviceCharge: Math.round(serviceCharge * 100) / 100,
-          accommodation: Math.round(accommodation * 100) / 100,
-          vat: Math.round(vat * 100) / 100,
-          total: Math.round(total * 100) / 100
-        };
+      console.log('📥 Create property response:', response.data);
+      
+      // Enrich the created property
+      if (response.data.property) {
+        response.data.property = enrichPropertyWithDiscount(response.data.property);
       }
       
       return response.data;
     } catch (error: any) {
-      console.error('💥 [Frontend API] Error creating property:', error);
+      console.error('💥 Error creating property:', error);
       throw new Error(error.response?.data?.message || 'Failed to create property');
     }
   },
 
-  // Update property (requires auth)
+  // Update property
   updateProperty: async (id: string, propertyData: FormData) => {
     try {
+      // Log FormData contents for debugging
+      console.log('📤 Sending FormData with discount for update:');
+      for (const [key, value] of propertyData.entries()) {
+        if (key === 'discount') {
+          console.log('  - discount:', value);
+        }
+      }
+      
       const response = await api.put(`/properties/${id}`, propertyData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       
-      // Ensure response has calculatedPrices
-      if (response.data.property && !response.data.property.calculatedPrices) {
-        const property = response.data.property;
-        const utilityPercentage = property.utilityPercentage || 20;
-        const serviceChargePercentage = property.serviceChargePercentage || 10;
-        const vatPercentage = property.vatPercentage || 7.5;
-        const actualPrice = property.price;
-        
-        const utility = (actualPrice * utilityPercentage) / 100;
-        const serviceCharge = (actualPrice * serviceChargePercentage) / 100;
-        const accommodation = actualPrice - utility - serviceCharge;
-        const vat = (accommodation * vatPercentage) / 100;
-        const total = actualPrice + vat;
-        
-        response.data.property.calculatedPrices = {
-          actualPrice,
-          utility: Math.round(utility * 100) / 100,
-          serviceCharge: Math.round(serviceCharge * 100) / 100,
-          accommodation: Math.round(accommodation * 100) / 100,
-          vat: Math.round(vat * 100) / 100,
-          total: Math.round(total * 100) / 100
-        };
+      console.log('📥 Update property response:', response.data);
+      
+      // Enrich the updated property
+      if (response.data.property) {
+        response.data.property = enrichPropertyWithDiscount(response.data.property);
       }
       
       return response.data;
     } catch (error: any) {
-      console.error('💥 [Frontend API] Error updating property:', error);
+      console.error('💥 Error updating property:', error);
       throw new Error(error.response?.data?.message || 'Failed to update property');
     }
   },
 
-  // Delete property (requires auth)
+  // Delete property
   deleteProperty: async (id: string) => {
     try {
       const response = await api.delete(`/properties/${id}`);
       return response.data;
     } catch (error: any) {
-      console.error('💥 [Frontend API] Error deleting property:', error);
+      console.error('💥 Error deleting property:', error);
       throw new Error(error.response?.data?.message || 'Failed to delete property');
     }
   },
 
-  // Get user's properties (requires auth)
+  // Get user's properties
   getUserProperties: async () => {
     try {
       const response = await api.get('/properties/user/my-properties');
       
-      // Ensure properties have the new price structure
+      // Enrich user properties
       const userProperties = Array.isArray(response.data) ? response.data : [];
-      
-      return userProperties.map((property: any) => {
-        if (!property.calculatedPrices && property.price) {
-          const utilityPercentage = property.utilityPercentage || 20;
-          const serviceChargePercentage = property.serviceChargePercentage || 10;
-          const vatPercentage = property.vatPercentage || 7.5;
-          const actualPrice = property.price;
-          
-          const utility = (actualPrice * utilityPercentage) / 100;
-          const serviceCharge = (actualPrice * serviceChargePercentage) / 100;
-          const accommodation = actualPrice - utility - serviceCharge;
-          const vat = (accommodation * vatPercentage) / 100;
-          const total = actualPrice + vat;
-          
-          return {
-            ...property,
-            utilityPercentage,
-            serviceChargePercentage,
-            vatPercentage,
-            calculatedPrices: {
-              actualPrice,
-              utility: Math.round(utility * 100) / 100,
-              serviceCharge: Math.round(serviceCharge * 100) / 100,
-              accommodation: Math.round(accommodation * 100) / 100,
-              vat: Math.round(vat * 100) / 100,
-              total: Math.round(total * 100) / 100
-            }
-          };
-        }
-        return property;
-      });
+      return enrichProperties(userProperties);
     } catch (error: any) {
-      console.error('💥 [Frontend API] Error fetching user properties:', error);
+      console.error('💥 Error fetching user properties:', error);
       throw new Error(error.response?.data?.message || 'Failed to fetch user properties');
     }
   },
 
-  // Admin: Get all properties (requires admin auth)
+  // Admin: Get all properties
   getAdminProperties: async (params?: any) => {
     try {
       const response = await api.get('/properties/admin/all', { params });
       
-      // Ensure admin properties have the new price structure
-      let properties = [];
-      
+      // Handle both response formats
       if (response.data.properties) {
-        properties = response.data.properties;
+        const enrichedProperties = enrichProperties(response.data.properties);
+        return {
+          ...response.data,
+          properties: enrichedProperties
+        };
       } else if (Array.isArray(response.data)) {
-        properties = response.data;
+        return enrichProperties(response.data);
       }
       
-      const enhancedProperties = properties.map((property: any) => {
-        if (!property.calculatedPrices && property.price) {
-          const utilityPercentage = property.utilityPercentage || 20;
-          const serviceChargePercentage = property.serviceChargePercentage || 10;
-          const vatPercentage = property.vatPercentage || 7.5;
-          const actualPrice = property.price;
-          
-          const utility = (actualPrice * utilityPercentage) / 100;
-          const serviceCharge = (actualPrice * serviceChargePercentage) / 100;
-          const accommodation = actualPrice - utility - serviceCharge;
-          const vat = (accommodation * vatPercentage) / 100;
-          const total = actualPrice + vat;
-          
-          return {
-            ...property,
-            utilityPercentage,
-            serviceChargePercentage,
-            vatPercentage,
-            calculatedPrices: {
-              actualPrice,
-              utility: Math.round(utility * 100) / 100,
-              serviceCharge: Math.round(serviceCharge * 100) / 100,
-              accommodation: Math.round(accommodation * 100) / 100,
-              vat: Math.round(vat * 100) / 100,
-              total: Math.round(total * 100) / 100
-            }
-          };
-        }
-        return property;
-      });
-      
-      return {
-        ...response.data,
-        properties: enhancedProperties
-      };
+      return response.data;
     } catch (error: any) {
-      console.error('💥 [Frontend API] Error fetching admin properties:', error);
+      console.error('💥 Error fetching admin properties:', error);
       throw new Error(error.response?.data?.message || 'Failed to fetch admin properties');
     }
   },
 
-  // Admin: Update property status (requires admin auth)
+  // Admin: Update property status
   updatePropertyStatus: async (id: string, status: string) => {
     try {
       const response = await api.patch(`/properties/admin/${id}/status`, { status });
       return response.data;
     } catch (error: any) {
-      console.error('💥 [Frontend API] Error updating property status:', error);
+      console.error('💥 Error updating property status:', error);
       throw new Error(error.response?.data?.message || 'Failed to update property status');
     }
   },
 
-  // Admin: Toggle featured status (requires admin auth)
+  // Admin: Toggle featured status
   toggleFeatured: async (id: string) => {
     try {
       const response = await api.patch(`/properties/admin/${id}/feature`);
       return response.data;
     } catch (error: any) {
-      console.error('💥 [Frontend API] Error toggling featured status:', error);
+      console.error('💥 Error toggling featured status:', error);
       throw new Error(error.response?.data?.message || 'Failed to toggle featured status');
     }
   }
 };
+
+
+
+
+
+
+
 
 // Amenities API calls
 // export const amenitiesAPI = {
@@ -2759,6 +3113,181 @@ export const expenseAPI = {
     }
   }
 };
+
+
+// Add to your lib/api.ts file
+
+// Affiliate API calls
+export const affiliateAPI = {
+  // ========== AFFILIATE MANAGEMENT (Admin) ==========
+  
+  // Create new affiliate
+  createAffiliate: async (affiliateData: any) => {
+    try {
+      const response = await api.post('/affiliates', affiliateData);
+      return response.data;
+    } catch (error: any) {
+      console.error('Create affiliate error:', error);
+      throw new Error(error.response?.data?.message || 'Failed to create affiliate');
+    }
+  },
+
+  // Get all affiliates with filters
+  getAffiliates: async (params?: {
+    page?: number;
+    limit?: number;
+    status?: string;
+    search?: string;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+  }) => {
+    try {
+      const response = await api.get('/affiliates', { params });
+      return response.data;
+    } catch (error: any) {
+      console.error('Get affiliates error:', error);
+      throw new Error(error.response?.data?.message || 'Failed to fetch affiliates');
+    }
+  },
+
+  // Get affiliate by ID
+  getAffiliateById: async (id: string) => {
+    try {
+      const response = await api.get(`/affiliates/${id}`);
+      return response.data;
+    } catch (error: any) {
+      console.error('Get affiliate error:', error);
+      throw new Error(error.response?.data?.message || 'Failed to fetch affiliate');
+    }
+  },
+
+  // Update affiliate
+  updateAffiliate: async (id: string, affiliateData: any) => {
+    try {
+      const response = await api.put(`/affiliates/${id}`, affiliateData);
+      return response.data;
+    } catch (error: any) {
+      console.error('Update affiliate error:', error);
+      throw new Error(error.response?.data?.message || 'Failed to update affiliate');
+    }
+  },
+
+  // Update affiliate status
+  updateAffiliateStatus: async (id: string, status: string) => {
+    try {
+      const response = await api.patch(`/affiliates/${id}/status`, { status });
+      return response.data;
+    } catch (error: any) {
+      console.error('Update affiliate status error:', error);
+      throw new Error(error.response?.data?.message || 'Failed to update affiliate status');
+    }
+  },
+
+  // Delete affiliate
+  deleteAffiliate: async (id: string) => {
+    try {
+      const response = await api.delete(`/affiliates/${id}`);
+      return response.data;
+    } catch (error: any) {
+      console.error('Delete affiliate error:', error);
+      throw new Error(error.response?.data?.message || 'Failed to delete affiliate');
+    }
+  },
+
+  // Get affiliates summary stats
+  getAffiliatesSummary: async () => {
+    try {
+      const response = await api.get('/affiliates/summary');
+      return response.data;
+    } catch (error: any) {
+      console.error('Get affiliates summary error:', error);
+      throw new Error(error.response?.data?.message || 'Failed to fetch affiliates summary');
+    }
+  },
+
+  // Get affiliate stats
+  getAffiliateStats: async (id: string) => {
+    try {
+      const response = await api.get(`/affiliates/${id}/stats`);
+      return response.data;
+    } catch (error: any) {
+      console.error('Get affiliate stats error:', error);
+      throw new Error(error.response?.data?.message || 'Failed to fetch affiliate stats');
+    }
+  },
+
+  // ========== AFFILIATE CODE PUBLIC ROUTES ==========
+
+  // Validate affiliate code (public - no auth required)
+  validateAffiliateCode: async (code: string) => {
+    try {
+      const response = await api.get(`/affiliates/validate/${code}`);
+      return response.data;
+    } catch (error: any) {
+      console.error('Validate affiliate code error:', error);
+      throw new Error(error.response?.data?.message || 'Invalid affiliate code');
+    }
+  },
+
+  // ========== AFFILIATE BOOKING MANAGEMENT ==========
+
+  // Apply affiliate code to booking (requires auth)
+  applyAffiliateCode: async (bookingId: string, affiliateCode: string) => {
+    try {
+      const response = await api.post(`/affiliates/bookings/${bookingId}/apply`, { 
+        affiliateCode 
+      });
+      return response.data;
+    } catch (error: any) {
+      console.error('Apply affiliate code error:', error);
+      throw new Error(error.response?.data?.message || 'Failed to apply affiliate code');
+    }
+  },
+
+  // Get affiliate bookings (admin)
+  getAffiliateBookings: async (
+    affiliateId: string, 
+    params?: {
+      page?: number;
+      limit?: number;
+      status?: string;
+      startDate?: string;
+      endDate?: string;
+    }
+  ) => {
+    try {
+      const response = await api.get(`/affiliates/${affiliateId}/bookings`, { params });
+      return response.data;
+    } catch (error: any) {
+      console.error('Get affiliate bookings error:', error);
+      throw new Error(error.response?.data?.message || 'Failed to fetch affiliate bookings');
+    }
+  },
+
+  // ========== COMMISSION MANAGEMENT ==========
+
+  // Update commission status (admin)
+  updateCommissionStatus: async (commissionId: string, status: string, notes?: string) => {
+    try {
+      const response = await api.patch(`/affiliates/commissions/${commissionId}/status`, { 
+        status, 
+        notes 
+      });
+      return response.data;
+    } catch (error: any) {
+      console.error('Update commission status error:', error);
+      throw new Error(error.response?.data?.message || 'Failed to update commission status');
+    }
+  }
+};
+
+
+
+
+
+
+
+
 
 
 

@@ -1,3 +1,4 @@
+// client/components/PropertyDetails.tsx
 'use client';
 
 import { useState, useRef, useEffect } from 'react';

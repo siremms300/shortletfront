@@ -1,3 +1,4 @@
+// client/app/admin/properties/page.tsx
 import PropertiesTable from '@/components/admin/PropertiesTable';
 
 export default function PropertiesPage() {

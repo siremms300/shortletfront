@@ -1,3 +1,4 @@
+// client/app/admin/properties/[id]/edit/page.tsx 
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -277,6 +278,23 @@ export default function EditPropertyPage({ params }: PageProps) {
       submitData.append('vatPercentage', formData.vatPercentage);
       
       // Append discount data
+      // if (formData.discountActive && formData.discountType && formData.discountValue) {
+      //   const discountData = {
+      //     type: formData.discountType,
+      //     value: parseFloat(formData.discountValue),
+      //     startDate: formData.discountStartDate || null,
+      //     endDate: formData.discountEndDate || null,
+      //     isActive: true
+      //   };
+      //   submitData.append('discount', JSON.stringify(discountData));
+      // } else {
+      //   // If discount is not active, send null to remove discount
+      //   submitData.append('discount', JSON.stringify(null));
+      // }
+
+
+      // In handleSubmit function of edit page, update discount handling:
+
       if (formData.discountActive && formData.discountType && formData.discountValue) {
         const discountData = {
           type: formData.discountType,
@@ -285,6 +303,7 @@ export default function EditPropertyPage({ params }: PageProps) {
           endDate: formData.discountEndDate || null,
           isActive: true
         };
+        console.log('📤 Sending discount data for update:', discountData);
         submitData.append('discount', JSON.stringify(discountData));
       } else {
         // If discount is not active, send null to remove discount
@@ -611,7 +630,7 @@ export default function EditPropertyPage({ params }: PageProps) {
                 value={formData.location}
                 onChange={handleInputChange}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f06123]" 
-                placeholder="Victoria Island, Lagos" 
+                placeholder="Barnawa, Kaduna" 
                 required
               />
             </div>

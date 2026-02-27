@@ -48,6 +48,7 @@ const adminNavigation = [
     category: 'User Management',
     items: [
       { name: 'All Users', href: '/admin/users', icon: '👥' },
+      { name: 'Affiliates', href: '/admin/affiliates', icon: '👥' },
       // { name: 'Host Applications', href: '/admin/host-applications', icon: '📝' },
     ]
   },
