@@ -1,5 +1,6 @@
-// clients/components/PropertyCard.tsx
+// client/components/PropertyCard.tsx
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 interface PropertyCardProps {
   id: string;
@@ -8,6 +9,11 @@ interface PropertyCardProps {
   price: number;
   discountedPrice?: number;
   discountPercentage?: number;
+  discount?: {
+    type: 'percentage' | 'fixed';
+    value: number;
+    isActive: boolean;
+  };
   image: string;
   rating: number;
   bedrooms?: number;
@@ -24,6 +30,7 @@ export default function PropertyCard({
   price, 
   discountedPrice,
   discountPercentage,
+  discount,
   image, 
   rating,
   bedrooms,
@@ -32,9 +39,26 @@ export default function PropertyCard({
   type,
   reviews = 0
 }: PropertyCardProps) {
-  // Add validation for all props
+  const [imgError, setImgError] = useState(false);
+  
+  // Calculate discount from discount object if provided
+  let finalDiscountedPrice = discountedPrice;
+  let finalDiscountPercentage = discountPercentage;
+  
+  if (discount && discount.isActive) {
+    if (discount.type === 'percentage') {
+      finalDiscountedPrice = price - (price * discount.value / 100);
+      finalDiscountPercentage = discount.value;
+    } else if (discount.type === 'fixed') {
+      finalDiscountedPrice = Math.max(0, price - discount.value);
+      finalDiscountPercentage = Math.round((discount.value / price) * 100);
+    }
+  }
+  
+  const hasDiscount = finalDiscountedPrice && finalDiscountedPrice < price && finalDiscountPercentage && finalDiscountPercentage > 0;
+  
+  // Validate required props
   const isValid = id && id !== 'undefined' && title && price && image;
-  const hasDiscount = discountedPrice && discountedPrice < price && discountPercentage && discountPercentage > 0;
   
   if (!isValid) {
     console.error('PropertyCard: Invalid props:', { id, title, price, image });
@@ -56,12 +80,10 @@ export default function PropertyCard({
         {/* Image */}
         <div className="relative h-48 md:h-56 overflow-hidden">
           <img
-            src={imageUrl}
+            src={imgError ? '/default-property.jpg' : imageUrl}
             alt={title}
             className="w-full h-full object-cover hover:scale-105 transition duration-300"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = '/default-property.jpg';
-            }}
+            onError={() => setImgError(true)}
           />
           <div className="absolute top-4 left-4 bg-[#f06123] text-white px-2 py-1 rounded text-xs font-semibold">
             {type || 'Property'}
@@ -69,8 +91,8 @@ export default function PropertyCard({
           
           {/* Discount Badge */}
           {hasDiscount && (
-            <div className="absolute top-4 right-4 bg-red-500 text-white px-2 py-1 rounded-lg text-sm font-bold shadow-lg animate-pulse">
-              -{discountPercentage}%
+            <div className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1.5 rounded-lg text-sm font-bold shadow-lg animate-pulse z-10">
+              🔥 {finalDiscountPercentage}% OFF
             </div>
           )}
         </div>
@@ -82,11 +104,11 @@ export default function PropertyCard({
           </h3>
           
           <div className="flex items-center text-gray-600 mb-3">
-            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            <span className="text-sm">{location}</span>
+            <span className="text-sm truncate">{location}</span>
           </div>
 
           {/* Rating */}
@@ -133,34 +155,267 @@ export default function PropertyCard({
           {/* Price */}
           <div className="mt-2">
             {hasDiscount ? (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center flex-wrap gap-2">
                 <span className="text-xl font-bold text-[#f06123]">
-                  ₦{discountedPrice?.toLocaleString()}
+                  ₦{finalDiscountedPrice?.toLocaleString()}
                 </span>
                 <span className="text-sm text-gray-400 line-through">
                   ₦{price.toLocaleString()}
                 </span>
-                <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                  Save {discountPercentage}%
+                <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">
+                  Save {finalDiscountPercentage}%
                 </span>
               </div>
             ) : (
-              <span className="text-xl font-bold text-[#383a3c]">
-                ₦{price.toLocaleString()}
-              </span>
+              <div className="flex items-baseline">
+                <span className="text-xl font-bold text-[#383a3c]">
+                  ₦{price.toLocaleString()}
+                </span>
+                <span className="text-xs text-gray-500 ml-1">/night</span>
+              </div>
             )}
-            <span className="text-xs text-gray-500 ml-1">/night</span>
           </div>
 
           {/* View Details Button */}
-          <button className="w-full mt-4 bg-[#f06123] text-white py-2 rounded-lg font-semibold hover:bg-orange-600 transition duration-200 text-sm">
-            View Details
-          </button>
+          <div className="mt-4">
+            <span className="inline-block w-full bg-[#f06123] text-white py-2.5 rounded-lg font-semibold hover:bg-orange-600 transition duration-200 text-sm text-center">
+              View Details
+            </span>
+          </div>
         </div>
       </div>
     </Link>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// // clients/components/PropertyCard.tsx
+// import Link from 'next/link';
+
+// interface PropertyCardProps {
+//   id: string;
+//   title: string;
+//   location: string;
+//   price: number;
+//   discountedPrice?: number;
+//   discountPercentage?: number;
+//   image: string;
+//   rating: number;
+//   bedrooms?: number;
+//   bathrooms?: number;
+//   maxGuests?: number;
+//   type?: string;
+//   reviews?: number;
+// }
+
+// export default function PropertyCard({ 
+//   id,
+//   title, 
+//   location, 
+//   price, 
+//   discountedPrice,
+//   discountPercentage,
+//   image, 
+//   rating,
+//   bedrooms,
+//   bathrooms,
+//   maxGuests,
+//   type,
+//   reviews = 0
+// }: PropertyCardProps) {
+//   // Add validation for all props
+//   const isValid = id && id !== 'undefined' && title && price && image;
+//   const hasDiscount = discountedPrice && discountedPrice < price && discountPercentage && discountPercentage > 0;
+  
+//   if (!isValid) {
+//     console.error('PropertyCard: Invalid props:', { id, title, price, image });
+//     return (
+//       <div className="bg-[#fcfeff] rounded-lg shadow-md overflow-hidden border border-gray-200 p-4">
+//         <p className="text-red-500 text-sm">Invalid property data</p>
+//       </div>
+//     );
+//   }
+
+//   // Ensure image is a valid URL
+//   const imageUrl = image.startsWith('http') || image.startsWith('/') 
+//     ? image 
+//     : `/uploads/properties/${image}`;
+
+//   return (
+//     <Link href={`/properties/${id}`} className="block h-full">
+//       <div className="bg-[#fcfeff] rounded-lg shadow-md overflow-hidden hover:shadow-xl transition duration-300 border border-gray-200 cursor-pointer transform hover:-translate-y-1 h-full flex flex-col">
+//         {/* Image */}
+//         <div className="relative h-48 md:h-56 overflow-hidden">
+//           <img
+//             src={imageUrl}
+//             alt={title}
+//             className="w-full h-full object-cover hover:scale-105 transition duration-300"
+//             onError={(e) => {
+//               (e.target as HTMLImageElement).src = '/default-property.jpg';
+//             }}
+//           />
+//           <div className="absolute top-4 left-4 bg-[#f06123] text-white px-2 py-1 rounded text-xs font-semibold">
+//             {type || 'Property'}
+//           </div>
+          
+//           {/* Discount Badge */}
+//           {hasDiscount && (
+//             <div className="absolute top-4 right-4 bg-red-500 text-white px-2 py-1 rounded-lg text-sm font-bold shadow-lg animate-pulse">
+//               -{discountPercentage}%
+//             </div>
+//           )}
+//         </div>
+
+//         {/* Content */}
+//         <div className="p-4 md:p-6 flex-1">
+//           <h3 className="text-lg md:text-xl font-semibold text-[#383a3c] mb-2 line-clamp-1">
+//             {title}
+//           </h3>
+          
+//           <div className="flex items-center text-gray-600 mb-3">
+//             <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+//               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+//             </svg>
+//             <span className="text-sm">{location}</span>
+//           </div>
+
+//           {/* Rating */}
+//           <div className="flex items-center mb-4">
+//             <div className="flex">
+//               {[...Array(5)].map((_, i) => (
+//                 <svg
+//                   key={i}
+//                   className={`w-4 h-4 ${i < Math.floor(rating) ? 'text-[#f06123]' : 'text-gray-300'}`}
+//                   fill="currentColor"
+//                   viewBox="0 0 20 20"
+//                 >
+//                   <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+//                 </svg>
+//               ))}
+//             </div>
+//             <span className="ml-2 text-gray-600 text-sm">
+//               {rating.toFixed(1)} ({reviews} review{reviews !== 1 ? 's' : ''})
+//             </span>
+//           </div>
+
+//           {/* Specifications */}
+//           <div className="grid grid-cols-3 gap-2 mb-4">
+//             {bedrooms !== undefined && (
+//               <div className="text-center">
+//                 <div className="text-lg font-semibold text-[#383a3c]">{bedrooms}</div>
+//                 <div className="text-xs text-gray-500">Bedrooms</div>
+//               </div>
+//             )}
+//             {bathrooms !== undefined && (
+//               <div className="text-center">
+//                 <div className="text-lg font-semibold text-[#383a3c]">{bathrooms}</div>
+//                 <div className="text-xs text-gray-500">Bathrooms</div>
+//               </div>
+//             )}
+//             {maxGuests !== undefined && (
+//               <div className="text-center">
+//                 <div className="text-lg font-semibold text-[#383a3c]">{maxGuests}</div>
+//                 <div className="text-xs text-gray-500">Max Guests</div>
+//               </div>
+//             )}
+//           </div>
+
+//           {/* Price */}
+//           <div className="mt-2">
+//             {hasDiscount ? (
+//               <div className="flex items-center gap-2">
+//                 <span className="text-xl font-bold text-[#f06123]">
+//                   ₦{discountedPrice?.toLocaleString()}
+//                 </span>
+//                 <span className="text-sm text-gray-400 line-through">
+//                   ₦{price.toLocaleString()}
+//                 </span>
+//                 <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
+//                   Save {discountPercentage}%
+//                 </span>
+//               </div>
+//             ) : (
+//               <span className="text-xl font-bold text-[#383a3c]">
+//                 ₦{price.toLocaleString()}
+//               </span>
+//             )}
+//             <span className="text-xs text-gray-500 ml-1">/night</span>
+//           </div>
+
+//           {/* View Details Button */}
+//           <button className="w-full mt-4 bg-[#f06123] text-white py-2 rounded-lg font-semibold hover:bg-orange-600 transition duration-200 text-sm">
+//             View Details
+//           </button>
+//         </div>
+//       </div>
+//     </Link>
+//   );
+// }
 
 
 
