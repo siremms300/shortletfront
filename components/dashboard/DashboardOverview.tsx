@@ -107,54 +107,124 @@ export default function DashboardOverview() {
     fetchDashboardData();
   }, []);
 
-  const fetchDashboardData = async () => {
-    try {
-      setLoading(true);
-      setError('');
+  // const fetchDashboardData = async () => {
+  //   try {
+  //     setLoading(true);
+  //     setError('');
       
-      console.log('📊 [Dashboard] Fetching dashboard data...');
+  //     console.log('📊 [Dashboard] Fetching dashboard data...');
       
-      // Fetch user bookings and wishlist
-      const [bookingsResponse, propertiesResponse] = await Promise.all([
-        bookingsAPI.getUserBookings(),
-        propertiesAPI.getProperties({ limit: 12 })
-      ]);
+  //     // Fetch user bookings and wishlist
+  //     const [bookingsResponse, propertiesResponse] = await Promise.all([
+  //       bookingsAPI.getUserBookings(),
+  //       propertiesAPI.getProperties({ limit: 12 })
+  //     ]);
 
-      console.log('📊 [Dashboard] Bookings response:', bookingsResponse);
-      console.log('📊 [Dashboard] Properties response:', propertiesResponse);
+  //     console.log('📊 [Dashboard] Bookings response:', bookingsResponse);
+  //     console.log('📊 [Dashboard] Properties response:', propertiesResponse);
 
-      const fetchedBookings = bookingsResponse?.bookings || [];
-      setBookings(fetchedBookings);
+  //     const fetchedBookings = bookingsResponse?.bookings || [];
+  //     setBookings(fetchedBookings);
       
-      // Log first booking for debugging
-      if (fetchedBookings.length > 0) {
-        console.log('📊 [Dashboard] First booking data:', {
-          booking: fetchedBookings[0],
-          totalAmount: fetchedBookings[0].totalAmount,
-          hasTotalAmount: fetchedBookings[0].totalAmount !== undefined,
-          typeOfTotalAmount: typeof fetchedBookings[0].totalAmount
-        });
-      }
+  //     // Log first booking for debugging
+  //     if (fetchedBookings.length > 0) {
+  //       console.log('📊 [Dashboard] First booking data:', {
+  //         booking: fetchedBookings[0],
+  //         totalAmount: fetchedBookings[0].totalAmount,
+  //         hasTotalAmount: fetchedBookings[0].totalAmount !== undefined,
+  //         typeOfTotalAmount: typeof fetchedBookings[0].totalAmount
+  //       });
+  //     }
 
-      // For now, simulate wishlist with featured properties
-      // In a real app, you'd have a separate wishlist API endpoint
-      const featuredProperties = (propertiesResponse || []).filter((prop: Property) => prop.isFeatured);
-      setWishlist(featuredProperties.slice(0, 8));
+  //     // For now, simulate wishlist with featured properties
+  //     // In a real app, you'd have a separate wishlist API endpoint
+  //     const featuredProperties = (propertiesResponse || []).filter((prop: Property) => prop.isFeatured);
+  //     setWishlist(featuredProperties.slice(0, 8));
 
-      console.log('📊 [Dashboard] Data loaded:', {
-        bookingsCount: fetchedBookings.length,
-        wishlistCount: featuredProperties.length
-      });
+  //     console.log('📊 [Dashboard] Data loaded:', {
+  //       bookingsCount: fetchedBookings.length,
+  //       wishlistCount: featuredProperties.length
+  //     });
 
-    } catch (error: any) {
-      console.error('❌ [Dashboard] Error fetching dashboard data:', error);
-      setError(error.message || 'Failed to load dashboard data');
-    } finally {
-      setLoading(false);
-    }
-  };
+  //   } catch (error: any) {
+  //     console.error('❌ [Dashboard] Error fetching dashboard data:', error);
+  //     setError(error.message || 'Failed to load dashboard data');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   // Calculate stats from real data
+  
+  
+  // In DashboardOverview.tsx, update the fetchDashboardData function:
+
+const fetchDashboardData = async () => {
+  try {
+    setLoading(true);
+    setError('');
+    
+    console.log('📊 [Dashboard] Fetching dashboard data...');
+    
+    // Fetch user bookings and wishlist
+    const [bookingsResponse, propertiesResponse] = await Promise.all([
+      bookingsAPI.getUserBookings(),
+      propertiesAPI.getProperties({ limit: 12 })
+    ]);
+
+    console.log('📊 [Dashboard] Bookings response:', bookingsResponse);
+    console.log('📊 [Dashboard] Properties response:', propertiesResponse);
+
+    const fetchedBookings = bookingsResponse?.bookings || [];
+    setBookings(fetchedBookings);
+    
+    // Log first booking for debugging
+    if (fetchedBookings.length > 0) {
+      console.log('📊 [Dashboard] First booking data:', {
+        booking: fetchedBookings[0],
+        totalAmount: fetchedBookings[0].totalAmount,
+        hasTotalAmount: fetchedBookings[0].totalAmount !== undefined,
+        typeOfTotalAmount: typeof fetchedBookings[0].totalAmount
+      });
+    }
+
+    // ✅ FIX: Handle both array and object responses
+    let propertiesArray = [];
+    
+    if (Array.isArray(propertiesResponse)) {
+      // If response is directly an array
+      propertiesArray = propertiesResponse;
+    } else if (propertiesResponse && propertiesResponse.properties) {
+      // If response has a properties property (paginated response)
+      propertiesArray = propertiesResponse.properties;
+    } else if (propertiesResponse && typeof propertiesResponse === 'object') {
+      // If it's a single property object
+      propertiesArray = [propertiesResponse];
+    }
+    
+    console.log('📊 [Dashboard] Extracted properties array:', propertiesArray.length);
+    
+    // Now filter the array safely
+    const featuredProperties = propertiesArray.filter((prop: Property) => prop.isFeatured);
+    setWishlist(featuredProperties.slice(0, 8));
+
+    console.log('📊 [Dashboard] Data loaded:', {
+      bookingsCount: fetchedBookings.length,
+      wishlistCount: featuredProperties.length
+    });
+
+  } catch (error: any) {
+    console.error('❌ [Dashboard] Error fetching dashboard data:', error);
+    setError(error.message || 'Failed to load dashboard data');
+  } finally {
+    setLoading(false);
+  }
+};
+  
+  
+  
+  
+  
   const upcomingTrips = bookings.filter(booking => {
     if (!booking || booking.bookingStatus === 'cancelled') return false;
     
